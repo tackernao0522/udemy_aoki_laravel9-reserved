@@ -1,0 +1,34 @@
+
+  GET|HEAD  / ............................................................................................................................................................................................. 
+  GET|HEAD  _debugbar/assets/javascript ....................................................................................................... debugbar.assets.js › Barryvdh\Debugbar › AssetController@js
+  GET|HEAD  _debugbar/assets/stylesheets .................................................................................................... debugbar.assets.css › Barryvdh\Debugbar › AssetController@css
+  DELETE    _debugbar/cache/{key}/{tags?} .............................................................................................. debugbar.cache.delete › Barryvdh\Debugbar › CacheController@delete
+  GET|HEAD  _debugbar/clockwork/{id} ............................................................................................. debugbar.clockwork › Barryvdh\Debugbar › OpenHandlerController@clockwork
+  GET|HEAD  _debugbar/open ........................................................................................................ debugbar.openhandler › Barryvdh\Debugbar › OpenHandlerController@handle
+  POST      _ignition/execute-solution ...................................................................................... ignition.executeSolution › Spatie\LaravelIgnition › ExecuteSolutionController
+  GET|HEAD  _ignition/health-check .................................................................................................. ignition.healthCheck › Spatie\LaravelIgnition › HealthCheckController
+  POST      _ignition/update-config ............................................................................................... ignition.updateConfig › Spatie\LaravelIgnition › UpdateConfigController
+  GET|HEAD  api/user ...................................................................................................................................................................................... 
+  GET|HEAD  dashboard ........................................................................................................................................................................... dashboard
+  GET|HEAD  forgot-password ....................................................................................................... password.request › Laravel\Fortify › PasswordResetLinkController@create
+  POST      forgot-password .......................................................................................................... password.email › Laravel\Fortify › PasswordResetLinkController@store
+  GET|HEAD  livewire/livewire.js ................................................................................................................... Livewire\Controllers › LivewireJavaScriptAssets@source
+  GET|HEAD  livewire/livewire.js.map ................................................................................................................. Livewire\Controllers › LivewireJavaScriptAssets@maps
+  POST      livewire/message/{name} ....................................................................................................... livewire.message › Livewire\Controllers › HttpConnectionHandler
+  GET|HEAD  livewire/preview-file/{filename} ..................................................................................... livewire.preview-file › Livewire\Controllers › FilePreviewHandler@handle
+  POST      livewire/upload-file ................................................................................................... livewire.upload-file › Livewire\Controllers › FileUploadHandler@handle
+  GET|HEAD  login ......................................................................................................................... login › Laravel\Fortify › AuthenticatedSessionController@create
+  POST      login .................................................................................................................................. Laravel\Fortify › AuthenticatedSessionController@store
+  POST      logout ...................................................................................................................... logout › Laravel\Fortify › AuthenticatedSessionController@destroy
+  GET|HEAD  register ......................................................................................................................... register › Laravel\Fortify › RegisteredUserController@create
+  POST      register ..................................................................................................................................... Laravel\Fortify › RegisteredUserController@store
+  POST      reset-password ................................................................................................................ password.update › Laravel\Fortify › NewPasswordController@store
+  GET|HEAD  reset-password/{token} ........................................................................................................ password.reset › Laravel\Fortify › NewPasswordController@create
+  GET|HEAD  sanctum/csrf-cookie ............................................................................................................................... Laravel\Sanctum › CsrfCookieController@show
+  GET|HEAD  user/confirm-password .................................................................................................................... Laravel\Fortify › ConfirmablePasswordController@show
+  POST      user/confirm-password ................................................................................................ password.confirm › Laravel\Fortify › ConfirmablePasswordController@store
+  GET|HEAD  user/confirmed-password-status ............................................................................... password.confirmation › Laravel\Fortify › ConfirmedPasswordStatusController@show
+  PUT       user/password .............................................................................................................. user-password.update › Laravel\Fortify › PasswordController@update
+  GET|HEAD  user/profile .................................................................................................................... profile.show › Laravel\Jetstream › UserProfileController@show
+  PUT       user/profile-information .............................................................................. user-profile-information.update › Laravel\Fortify › ProfileInformationController@update
+

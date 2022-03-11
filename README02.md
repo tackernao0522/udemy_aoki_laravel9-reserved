@@ -331,3 +331,104 @@ return [
 - `$ php artisan storage:link`を実行<br>
 
 * `$ php artisan migrate:fresh`を実行(これでプロフィール画像をアップロードする)<br>
+
+## 14 ログイン時のソースコードを見てみる
+
+### ログイン機能をカスタマイズするなら
+
+`App\Actions` に置かれている<br>
+
+ルーティング先のファイルは参考程度に見ておく<br>
+
+### Fortify（要塞・固める）
+
+Laravel\Fortify は`vendor/laravel/fortify/src`の中<br>
+
+login のアクション<br>
+vendor/laravel/fortify/src/Http/Controllers/AuthenticatedSessionController.php<br>
+
+`vendor/laravel/fortify/src/Http/controllers/AuthenticatedSessionController.php`<br>
+
+app でサービスコンテナに登録(ページ読み込みの度に実行)<br>
+
+```php:AutenticatedSessionController.php
+public function create()
+{
+  return app(LoginViewResponse::class);
+}
+```
+
+### 2 種類のサービスプロバイダ
+
+```
+// app/providersフォルダ配下
+APP\Providers\FortifyServiceProvider
+App\Providers\JetstreamServiceProvider
+```
+
+```
+// vendor/laravelフォルダ配下
+vendor/laravel/fortify/src/FortifyServiceProvider
+vendor/laravel/jetstream/src/JetstreamServiceProvider
+```
+
+### vendor/jetstream@boot
+
+`vendor/laravel/jetstream/src/jetstreamServiceProvider.php`<br>
+
+```php:jetstreamServiceProvider.php
+// bootメソッドは起動時に実行
+public function boot()
+{
+  $this->loadViewsFrom(__DIR__.'/../resources/views','jetstream);
+  // マニュアルのパッケージ開発/ビュー
+
+  Fortify::viewPrefix('auth.'); // 次ページ
+}
+```
+
+### vendor/Fortify@viewPrefix
+
+`vendor/laravel/fortify/Fortify.php`<br>
+
+```php:Fortify.php
+public static function viewPrefix(string $prefix)
+{
+  static::loginView($prefix.'login');
+}
+// 引数で$prefixがつくので、auth.loginになる
+```
+
+### vendor/Fortify@loginView
+
+`vendor/laravel/fortify/Fortify.php`<br>
+
+```php:Fortify.php
+public static function loginView($view)
+{
+  app()->singleton(LoginViewResponse::class, function() use ($view) {
+    return new SimpleViewResponse($view);
+  });
+}
+// appでサービスコンテナにLoginViewResponseを登録している
+// SimpleViewResponseをインスタンス化している
+```
+
+### SimpleViewResponse
+
+`vendor/laravel/fortify/src/Http/Response/SimpleViewResponse.php`<br>
+
+```php:SimpleViewResponse.php
+public function toResponse($request)
+{
+  if (!is_callable($this->view) || is_string($this->view)) {
+    return view($this->view, ['request' => $request]); // auth.loginが表示される
+  }
+
+  $response = call_user_func($this->view, $request);
+
+  if ($response instanceof Responsable) {
+    return $response->toResponse($request);
+  }
+}
+```
