@@ -96,8 +96,79 @@ https://laravel-livewire.com/ <br>
 php artisan make:controller LivewireTestCotroller<br>
 
 ```php:LivewireTestController.php
-public static function index()
+public function index()
 {
-  return view('livewire-test.index);
+  return view('livewire-test.index');
 }
 ```
+
+## 19 Livewire の準備
+
+### ハンズオン
+
+- `$ php artisan make:controller LivewireTestController`を実行<br>
+
+### ルートに追記
+
+`routes/web.php`<br>
+
+```php:web.php
+// Laravel9から controllerでまとめることができる
+
+use App\Http\Controllers\LivewireTestController;
+
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->group(function () {
+    Route::get('index', 'index');
+  });
+```
+
+### ハンズオン
+
+- `routes/web.php`を編集<br>
+
+```php:web.php
+<?php
+
+use App\Http\Controllers\LivewireTestController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+  return view('welcome');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])
+  ->get('/dashboard', function () {
+    return view('dashboard');
+  })
+  ->name('dashboard');
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->group(function () {
+    Route::get('index', 'index');
+  });
+```
+
+- `resources/views/livewire-test`ディレクトリを作成<br>
+
+* `redources/views/livewire-test/index.blade.php`ファイルを作成<br>
+
+```html:index.blade.php
+livewireテスト
+```
+
+- localhost/livewire-test/index にアクセスしてみる<br>
