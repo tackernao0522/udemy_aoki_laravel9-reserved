@@ -68,3 +68,36 @@ php artisan vendor:publish --tag=jetstream-views<br>
 ### ハンズオン
 
 - `$ php artisan vendor:publish --tag=jetstream-views`を実行<br>
+
+# セクション 3: Livewire
+
+## 18 Livewire の紹介
+
+### Livewire とは
+
+PHP のみで Vue や React のようなリアクティブな動的コンポーネントを作成できるライブラリ<br>
+
+Blade 構文を使えるので Laravel と相性が良い<br>
+
+### Livewire のデメリット
+
+裏側で Ajax を使いサーバー通信をしているため、JavaScript ライブラリより多少表示スピードが遅い<br>
+
+### Livewire マニュアル
+
+Readouble<br>
+https://readouble.com/livewire/2.x/ja/quickstart.html <br>
+
+Livewire<br>
+https://laravel-livewire.com/ <br>
+
+### コントローラ生成
+
+php artisan make:controller LivewireTestCotroller<br>
+
+```php:LivewireTestController.php
+public static function index()
+{
+  return view('livewire-test.index);
+}
+```
