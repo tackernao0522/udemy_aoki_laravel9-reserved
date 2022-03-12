@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use App\Actions\Jetstream\DeleteUser;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Fortify;
 use Laravel\Jetstream\Jetstream;
 
 class JetstreamServiceProvider extends ServiceProvider
@@ -15,7 +16,7 @@ class JetstreamServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Fortify::ignoreRoutes();
     }
 
     /**

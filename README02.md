@@ -432,3 +432,137 @@ public function toResponse($request)
   }
 }
 ```
+
+## 15 ルーティング Fortify
+
+### ルーティング Fortify その 1
+
+`vendor/laravel/fortify/routes/routes.php`<br>
+
+Features で機能有無を確認している<br>
+`vendor/laravel/fortify/src/Features.php`<br>
+機能有無は `config/fortify.php`の`features`がコメントアウトされているか<br>
+
+コントローラーは<br>
+
+`vendor/laravel/fortify/src/Http/Controllers/配下<br>
+
+### ルーティング Fortify その 2
+
+もしカスタマイズする場合は<br>
+
+`JetstreamServiceProvider`内でルーティング情報を無効化する<br>
+
+```
+use Laravel\Fortify\Fortify;
+
+public function register()
+{
+  Fortify::ignoreRoutes();
+}
+```
+
+### ハンズオン
+
+`app/Providers/JetstreamServiceProvider.php`を編集<br>
+
+```php:JetstreamServiceProvider.php
+<?php
+
+namespace App\Providers;
+
+use App\Actions\Jetstream\DeleteUser;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Fortify; // 追記
+use Laravel\Jetstream\Jetstream;
+
+class JetstreamServiceProvider extends ServiceProvider
+{
+  /**
+   * Register any application services.
+   *
+   * @return void
+   */
+  public function register()
+  {
+    // 編集
+    Fortify::ignoreRoutes();
+  }
+
+  /**
+   * Bootstrap any application services.
+   *
+   * @return void
+   */
+  public function boot()
+  {
+    $this->configurePermissions();
+
+    Jetstream::deleteUsersUsing(DeleteUser::class);
+  }
+
+  /**
+   * Configure the permissions that are available within the application.
+   *
+   * @return void
+   */
+  protected function configurePermissions()
+  {
+    Jetstream::defaultApiTokenPermissions(['read']);
+
+    Jetstream::permissions(['create', 'read', 'update', 'delete']);
+  }
+}
+```
+
+※ 上記のように一度無効化してから`web.php`で編集する<br>
+
+`app/Providers/JetstreamServiceProvider.php`を編集<br>
+
+```php:JetstreamServiceProvider.php
+<?php
+
+namespace App\Providers;
+
+use App\Actions\Jetstream\DeleteUser;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Fortify\Fortify;
+use Laravel\Jetstream\Jetstream;
+
+class JetstreamServiceProvider extends ServiceProvider
+{
+  /**
+   * Register any application services.
+   *
+   * @return void
+   */
+  public function register()
+  {
+    // Fortify::ignoreRoutes(); // 今回はコメントアウトしておく Fortifyのルーティングを無効化する方法
+  }
+
+  /**
+   * Bootstrap any application services.
+   *
+   * @return void
+   */
+  public function boot()
+  {
+    $this->configurePermissions();
+
+    Jetstream::deleteUsersUsing(DeleteUser::class);
+  }
+
+  /**
+   * Configure the permissions that are available within the application.
+   *
+   * @return void
+   */
+  protected function configurePermissions()
+  {
+    Jetstream::defaultApiTokenPermissions(['read']);
+
+    Jetstream::permissions(['create', 'read', 'update', 'delete']);
+  }
+}
+```
