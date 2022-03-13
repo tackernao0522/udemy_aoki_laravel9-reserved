@@ -246,3 +246,110 @@ x-jet- ・・・ コンポーネント<br>
   </body>
 </html>
 ```
+
+## 21 サンプル Counter
+
+### Livewire サンプルについて
+
+Jetstream は Alpine.js と組み合わせて構成されているが、シンプルに解説するために<br>
+まずは Livewire のみで進めていく。<br>
+
+https://readouble.com/livewire/2.x/ja/quickstart.html <br>
+
+### Counter コンポーネント
+
+php artisan make:livewire counter<br>
+
+2 つのファイルが生成される<br>
+
+`app/Http/Livewire/Counter.php`<br>
+
+`resources/views/livewire/counter.blade.php`<br>
+
+### ハンズオン
+
+- `$ php artisan make:livewire counter`を実行<br>
+
+```:terminal
+
+CLASS: app/Http/Livewire/Counter.php
+VIEW:  resources/views/livewire/counter.blade.php
+
+  _._
+/ /o\ \   || ()                ()  __
+|_\ /_|   || || \\// /_\ \\ // || |~~ /_\
+ |`|`|    || ||  \/  \\_  \^/  || ||  \\_
+
+
+Congratulations, you've created your first Livewire component! 🎉🎉🎉
+
+ Would you like to show some love by starring the repo? (yes/no) [no]:
+ >
+```
+
+- `no`を入力して`Enter`<br>
+
+### views/livewire/counter.blade.php
+
+```html:counter.blade.php
+<div sthle="text-align: center">
+  <button wire:click="increment">+</button>
+  // wire:click="メソッド名"で実行
+  <h1>{{ $count }}</h1>
+  // Counterクラス内プロパティを表示
+</div>
+```
+
+### ハンズオン
+
+- `app/Http/Livewire/Counter.php`を編集<br>
+
+```php:Counter.php
+<?php
+
+namespace App\Http\Livewire;
+
+use Livewire\Component;
+
+class Counter extends Component
+{
+  public $count = 0;
+
+  public function increment()
+  {
+    $this->count++;
+  }
+
+  public function render()
+  {
+    return view('livewire.counter');
+  }
+}
+```
+
+- `resources/views/livewire/counter.blade.php`を編集<br>
+
+```html:counter.blade.php
+<div style="text-align: center">
+  <button wire:click="increment">+</button>
+  <h1>{{ $count }}</h1>
+</div>
+```
+
+- `resources/views/livewire-test/index.blade.php`を編集<br>
+
+```html:index.blade.php
+<html>
+  <head>
+    @livewireStyles
+  </head>
+
+  <body>
+    livewireテスト {{--
+    <livewire:counter />
+    --}} @livewire('counter') @livewireScripts
+  </body>
+</html>
+```
+
+- localhost/livewire-test/index にアクセスして試してみる<br>
