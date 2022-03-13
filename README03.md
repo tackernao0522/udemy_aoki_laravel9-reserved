@@ -353,3 +353,61 @@ class Counter extends Component
 ```
 
 - localhost/livewire-test/index にアクセスして試してみる<br>
+
+## 22. データバインディング wire:model
+
+### データバインディング
+
+Class 側<br>
+
+```
+public \$name = '';
+```
+
+Blade 側<br>
+
+```
+<input wire:model="name" type="text">
+こんにちは {{ $name }} さん
+```
+
+### ハンズオン
+
+- `app/Http/Livewire/Counter.php`を編集<br>
+
+```php:Counter.php
+<?php
+
+namespace App\Http\Livewire;
+
+use Livewire\Component;
+
+class Counter extends Component
+{
+  public $count = 0;
+  public $name = ''; // 追記
+
+  public function increment()
+  {
+    $this->count++;
+  }
+
+  public function render()
+  {
+    return view('livewire.counter');
+  }
+}
+```
+
+- `resoureces/views/livewire/counter.blade.php`を編集<br>
+
+```html:counter.blade.php
+<div style="text-align: center">
+  <button wire:click="increment">+</button>
+  <h1>{{ $count }}</h1>
+  <div class="mb-8"></div>
+  <input type="text" wire:model="name" />
+  <br />
+  こんにちは、{{ $name }} さん
+</div>
+```
