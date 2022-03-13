@@ -6,7 +6,8 @@
 
 <body>
     livewireテスト
-
+    {{-- <livewire:counter /> --}}
+    @livewire('counter')
     @livewireScripts
 </body>
 
