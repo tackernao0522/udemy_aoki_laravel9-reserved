@@ -406,8 +406,40 @@ class Counter extends Component
   <button wire:click="increment">+</button>
   <h1>{{ $count }}</h1>
   <div class="mb-8"></div>
-  <input type="text" wire:model="name" />
-  <br />
   こんにちは、{{ $name }} さん
+  <br />
+  <input type="text" wire:model="name" />
+</div>
+```
+
+## 23 wire:model のオプション
+
+### データバインディング オプション
+
+`wire:model.debounce.20000ms=""`<br>
+指定 ms 待って通信 1000ms = 1 秒<br>
+
+`wire:model.lazy=""`<br>
+フォーカルが外れたタイミングで通信<br>
+(JS の change イベント)<br>
+
+`wire:model.defer=""`<br>
+submit ボタンなどを押したタイミングで通信<br>
+
+### ハンズオン
+
+`resources/views/livewire/counter.blade.php`を編集<br>
+
+```html:counter.blade.php
+<div style="text-align: center">
+  <button wire:click="increment">+</button>
+  <h1>{{ $count }}</h1>
+  <div class="mb-8"></div>
+  こんにちは、{{ $name }} さん
+  <br />
+  {{--
+  <input type="text" wire:model.debounce.2000ms="name" />
+  --}}
+  <input type="text" wire:model.lazy="name" />
 </div>
 ```
