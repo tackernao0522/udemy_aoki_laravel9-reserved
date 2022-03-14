@@ -297,7 +297,7 @@ public function register()
 
 ### ハンズオン
 
-```app/Http/Livewire/Register.php`を編集<br>
+`app/Http/Livewire/Register.php`を編集<br>
 
 ```php:Register.php
 <?php
