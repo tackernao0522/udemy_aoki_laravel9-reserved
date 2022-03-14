@@ -19,6 +19,11 @@ class Counter extends Component
         $this->name = 'updated';
     }
 
+    public function mouseOver()
+    {
+        $this->name = 'mouseover';
+    }
+
     public function increment()
     {
         $this->count++;
