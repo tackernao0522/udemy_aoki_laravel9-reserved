@@ -262,3 +262,85 @@ class Register extends Component
 
 気にせず次のレクチャーに進んでいただくと、.prevent をつけるので dd 画面が表示されると思われます。<br>
 
+## 28 \$this と wire:submit.prevent
+
+### Livewire/Register.php
+
+```php:Livewire/Register.php
+public $name;
+public $email;
+public $password;
+
+public function register()
+{
+  dd($this); // $thisで値が取得できる
+}
+```
+
+### views/livewire/register.blade.php
+
+```html/register.blade.php
+<form wire:submit.prevent="register">
+  <label for="name">名前</label>
+  <input id="name" type="text" wire:model="name" />
+  <br />
+
+  <label for="email">メールアドレス</label>
+  <input id="email" type="email" wire:model="email" />
+  <br />
+
+  <label for="password">パスワード</label>
+  <input id="password" type="password" wire:model="password" />
+  <button>登録する</button>
+</form>
+```
+
+### ハンズオン
+
+```app/Http/Livewire/Register.php`を編集<br>
+
+```php:Register.php
+<?php
+
+namespace App\Http\Livewire;
+
+use Livewire\Component;
+
+class Register extends Component
+{
+  public $name;
+  public $email;
+  public $password;
+
+  public function register()
+  {
+    dd($this);
+  }
+
+  public function render()
+  {
+    return view('livewire.register');
+  }
+}
+```
+
+- `resources/views/livewire/register.blade.php`を編集<br>
+
+```html:register.blade.php
+<div>
+  <form wire:submit.prevent="register">
+    <label for="name">名前</label>
+    <input id="name" type="text" wire:model="name" />
+    <br />
+
+    <label for="email">メールアドレス</label>
+    <input type="text" id="email" wire:model="email" />
+    <br />
+
+    <label for="password">パスワード</label>
+    <input type="password" id="password" wire:model="password" />
+    <br />
+    <button>登録する</button>
+  </form>
+</div>
+```
