@@ -94,3 +94,160 @@ class Counter extends Component
 ```
 
 - 参考: https://readouble.com/livewire/2.x/ja/actions.html <br>
+
+## 26 フォームの準備
+
+### フォーム送信の準備
+
+php artisan make:livewire register<br>
+
+ルーティング<br>
+
+```
+Route::get('register', 'register); // 追記
+```
+
+コントローラ<br>
+
+```
+public function register()
+{
+  return view('livewire-test.register);
+}
+```
+
+ビュー<br>
+`livewire-test/register.blade.php`<br>
+
+```
+@livewire('register')
+```
+
+`Livewire/Register.php`クラス<br>
+
+```
+public function register()
+{
+  dd('登録テスト');
+}
+```
+
+`views/livewire/register.blade.php`コンポーネント<br>
+
+```
+<form wire:submit="register">
+  <button>登録</button>
+</form>
+```
+
+### ハンズオン
+
+- `$ php artisan make:livewire register`を実行<br>
+
+* `routes/web.php`を編集<br>
+
+```php:web.php
+<?php
+
+use App\Http\Controllers\LivewireTestController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+  return view('welcome');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])
+  ->get('/dashboard', function () {
+    return view('dashboard');
+  })
+  ->name('dashboard');
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->group(function () {
+    Route::get('index', 'index');
+    Route::get('register', 'register'); // 追記
+  });
+```
+
+- `app/Http/Controllers/LiveWireTestController.php`を編集<br>
+
+```php:LivewireTestController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class LivewireTestController extends Controller
+{
+  public function index()
+  {
+    return view('livewire-test.index');
+  }
+
+  public function register()
+  {
+    return view('livewire-test.register');
+  }
+}
+```
+
+- `resources/views/livewire-test/register.blade.php`ファイルを作成<br>
+
+```html:register.blade.php
+<html>
+  <head>
+    @livewireStyles
+  </head>
+
+  <body>
+    livewireテスト register @livewire('register') @livewireScripts
+  </body>
+</html>
+```
+
+- `resources/views/livewire/register.blade.php`を編集<br>
+
+```html:register.blade.php
+<div>
+  <form wire:submit="register">
+    <button>登録する</button>
+  </form>
+</div>
+```
+
+- `app/Http/Livewire/Register.php`を編集<br>
+
+```php:Register.php
+<?php
+
+namespace App\Http\Livewire;
+
+use Livewire\Component;
+
+class Register extends Component
+{
+  public function register()
+  {
+    dd('登録テスト');
+  }
+
+  public function render()
+  {
+    return view('livewire.register');
+  }
+}
+```
