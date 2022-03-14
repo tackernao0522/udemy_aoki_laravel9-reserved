@@ -251,3 +251,14 @@ class Register extends Component
   }
 }
 ```
+
+## 27 wire:submit についての補足
+
+この段階では form wire:submit に.prevent をつけていないので、<br>
+
+登録ボタンを押すたびにページ再読み込みがかかります。<br>
+
+再読み込みが早いと dd 画面が表示されない事もあるのですが、<br>
+
+気にせず次のレクチャーに進んでいただくと、.prevent をつけるので dd 画面が表示されると思われます。<br>
+
