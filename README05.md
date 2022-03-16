@@ -153,7 +153,8 @@ class Register extends Component
     @enderror
 
     <label for="email">メールアドレス</label>
-    <input type="text" id="email" wire:model.lazy="email" /> <!-- 編集 -->
+    <input type="text" id="email" wire:model.lazy="email" />
+    <!-- 編集 -->
     <br />
     @error('email')
     <div class="text-red-400">{{ $message }}</div>
@@ -169,4 +170,138 @@ class Register extends Component
     <button>登録する</button>
   </form>
 </div>
+```
+
+## 33 フラッシュメッセージ
+
+https://readouble.com/livewire/2.x/ja/flash-messages.html <br>
+
+`Livewire/Register.php クラス`<br>
+
+### フラッシュメッセージ クラス側
+
+`Livewire/Register.php クラス`<br>
+
+```php:Register.php
+public function register()
+{
+  // 略
+  session()->flash('message', '登録OKです');
+
+  return to_route('livewire-test.index); // Laravel9新機能
+}
+```
+
+### ハンズオン
+
+- `app/Http/Livewire/Register.php`を編集<br>
+
+```php:Register.php
+<?php
+
+namespace App\Http\Livewire;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Livewire\Component;
+
+class Register extends Component
+{
+  public $name;
+  public $email;
+  public $password;
+
+  protected $rules = [
+    'name' => 'required|string|max:255',
+    'email' => 'required|string|email|max:255|unique:users',
+    'password' => 'required|string|min:8',
+  ];
+
+  public function updated($property)
+  {
+    $this->validateOnly($property);
+  }
+
+  public function register()
+  {
+    $this->validate();
+    User::create([
+      'name' => $this->name,
+      'email' => $this->email,
+      'password' => Hash::make($this->password),
+    ]);
+
+    session()->flash('message', '登録OKです'); // 追記
+
+    return to_route('livewire-test.index'); // 追記
+  }
+
+  public function render()
+  {
+    return view('livewire.register');
+  }
+}
+```
+
+- `resources/views/livewire-test/index.blade.php`を編集<br>
+
+```html:index.blade.php
+<html>
+  <head>
+    @livewireStyles
+  </head>
+
+  <body>
+    livewireテスト
+    <div>
+      @if (session()->has('message'))
+      <div class="">
+        {{ session('message') }}
+      </div>
+      @endif
+    </div>
+    {{--
+    <livewire:counter />
+    --}} @livewire('counter') @livewireScripts
+  </body>
+</html>
+```
+
+- `routes/web.php`を編集<br>
+
+```php:web.php
+<?php
+
+use App\Http\Controllers\LivewireTestController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+  return view('welcome');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])
+  ->get('/dashboard', function () {
+    return view('dashboard');
+  })
+  ->name('dashboard');
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->name('livewire-test.')
+  ->group(function () {
+    Route::get('index', 'index')->name('index'); // 編集
+    Route::get('register', 'register')->name('register'); // 編集
+  });
 ```

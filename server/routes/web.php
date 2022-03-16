@@ -18,14 +18,17 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
+Route::middleware(['auth:sanctum', 'verified'])
+    ->get('/dashboard', function () {
+        return view('dashboard');
+    })
+    ->name('dashboard');
 
 // localhost/livewire-test/index
 Route::controller(LivewireTestController::class)
     ->prefix('livewire-test')
+    ->name('livewire-test.')
     ->group(function () {
-        Route::get('index', 'index');
-        Route::get('register', 'register');
+        Route::get('index', 'index')->name('index');
+        Route::get('register', 'register')->name('register');
     });

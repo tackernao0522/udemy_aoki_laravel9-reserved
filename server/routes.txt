@@ -12,8 +12,8 @@
   GET|HEAD  dashboard ...................................................................................................................................................................................... dashboard
   GET|HEAD  forgot-password .................................................................................................................. password.request › Laravel\Fortify › PasswordResetLinkController@create
   POST      forgot-password ..................................................................................................................... password.email › Laravel\Fortify › PasswordResetLinkController@store
-  GET|HEAD  livewire-test/index ......................................................................................................................................................... LivewireTestController@index
-  GET|HEAD  livewire-test/register ................................................................................................................................................... LivewireTestController@register
+  GET|HEAD  livewire-test/index ................................................................................................................................... livewire-test.index › LivewireTestController@index
+  GET|HEAD  livewire-test/register .......................................................................................................................... livewire-test.register › LivewireTestController@register
   GET|HEAD  livewire/livewire.js .............................................................................................................................. Livewire\Controllers › LivewireJavaScriptAssets@source
   GET|HEAD  livewire/livewire.js.map ............................................................................................................................ Livewire\Controllers › LivewireJavaScriptAssets@maps
   POST      livewire/message/{name} .................................................................................................................. livewire.message › Livewire\Controllers › HttpConnectionHandler
