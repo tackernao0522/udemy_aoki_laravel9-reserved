@@ -344,3 +344,78 @@ class Register extends Component
   </form>
 </div>
 ```
+
+## 29 登録とバリデーション
+
+- https://readouble.com/livewire/2.x/ja/input-validation.html <br>
+
+### ユーザー登録とバリデーション
+
+`app/Fortify/CreateUser.php`を参考<br>
+
+`Livewire/Register.php(クラス)`<br>
+
+```php:Register.php
+use App\Models\User;
+user Illuminate\Support\Facades\Hash;
+
+protected $rules = [
+    'name' => 'required|string|max:255',
+    'email' => 'required|string|email|max:255|unique:users',
+    'password' => 'required|string|min:8',
+  ];
+
+  public function register()
+  {
+    $this->validate();
+    User::create([
+      'name' => $this->name,
+      'email' => $this->email,
+      'password' => Hash::make($this->password)
+    ]);
+  }
+```
+
+### ハンズオン
+
+`app/Http/Livewire/Register.php`を編集<br>
+
+```php:Register.php
+<?php
+
+namespace App\Http\Livewire;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Livewire\Component;
+
+class Register extends Component
+{
+  public $name;
+  public $email;
+  public $password;
+
+  protected $rules = [
+    'name' => 'required|string|max:255',
+    'email' => 'required|string|email|max:255|unique:users',
+    'password' => 'required|string|min:8',
+  ];
+
+  public function register()
+  {
+    $this->validate();
+    User::create([
+      'name' => $this->name,
+      'email' => $this->email,
+      'password' => Hash::make($this->password),
+    ]);
+  }
+
+  public function render()
+  {
+    return view('livewire.register');
+  }
+}
+```
+
+- https://localhost/livewire-test/register にアクセスして新規登録してみる<br>
