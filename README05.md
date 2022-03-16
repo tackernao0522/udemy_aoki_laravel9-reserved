@@ -91,3 +91,82 @@ Just In Time 機能が追加されたため、<br>
   </form>
 </div>
 ```
+
+### 32 リアルタイムバリデーション
+
+- `app/Http/Livewire/Register.php`を編集<br>
+
+```php:Register.php
+<?php
+
+namespace App\Http\Livewire;
+
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
+use Livewire\Component;
+
+class Register extends Component
+{
+  public $name;
+  public $email;
+  public $password;
+
+  protected $rules = [
+    'name' => 'required|string|max:255',
+    'email' => 'required|string|email|max:255|unique:users',
+    'password' => 'required|string|min:8',
+  ];
+
+  // 追記
+  public function updated($property)
+  {
+    $this->validateOnly($property);
+  }
+
+  public function register()
+  {
+    $this->validate();
+    User::create([
+      'name' => $this->name,
+      'email' => $this->email,
+      'password' => Hash::make($this->password),
+    ]);
+  }
+
+  public function render()
+  {
+    return view('livewire.register');
+  }
+}
+```
+
+- `resources/views/livewire/register.blade.php`を編集<br>
+
+```html:register.blade.php
+<div>
+  <form wire:submit.prevent="register">
+    <label for="name">名前</label>
+    <input id="name" type="text" wire:model="name" />
+    <br />
+    @error('name')
+    <div class="text-red-400">{{ $message }}</div>
+    @enderror
+
+    <label for="email">メールアドレス</label>
+    <input type="text" id="email" wire:model.lazy="email" /> <!-- 編集 -->
+    <br />
+    @error('email')
+    <div class="text-red-400">{{ $message }}</div>
+    @enderror
+
+    <label for="password">パスワード</label>
+    <input type="password" id="password" wire:model="password" />
+    <br />
+    @error('password')
+    <div class="text-red-400">{{ $message }}</div>
+    @enderror
+
+    <button>登録する</button>
+  </form>
+</div>
+```
