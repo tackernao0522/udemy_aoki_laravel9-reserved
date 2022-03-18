@@ -111,3 +111,24 @@ x-on:click="" 省略形 @click=""<br>
 (vendor/laravel/jetstream/src/JetstreamServiceProvider.php でコンポーネント登録されている)<br>
 
 実態は `views/navigation-menu.blade.php`<br>
+
+## 39 dropsown のコードを読んでみる
+
+### x-jet-dropdown
+
+`vendor/jestream/components/dropdown.blade.php`<br>
+
+```html:dropdown.blade.php
+<!-- 一部省略 -->
+<div
+  class="relative"
+  x-data="{ open: false }"
+  @click.away="open = false"
+  @close.stop="open = false"
+>
+  <div @click="open = !open">
+    {{ $trigger }}
+  </div>
+  <div x-show="open" x-transition:enter (6種類) @click="open = false"></div>
+</div>
+```
