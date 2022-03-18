@@ -355,3 +355,102 @@ https://laravel-livewire.com/docs/2.x/alpine-js <br>
 
 Alpine.js<br>
 https://alpinejs.dev/ <br>
+
+## 36 Alpine.js の下準備
+
+### Alpine.js を扱う準備<br>
+
+ルート<br>
+
+```
+use App\Http\Controllers\AlpineTestController;
+
+Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
+```
+
+コントローラ<br>
+
+`php artisan make:controller AlpineTestController`<br>
+
+```
+public function index()
+{
+  return view('alpine-test.index);
+}
+```
+
+ビュー<br>
+
+`resources/views/alpine-test/index.blade.php`<br>
+
+### ハンズオン
+
+- `$ php artisan make:controller AlpineTestController`を実行<br>
+
+* `routes/web.php`を編集<br>
+
+```php:web.php
+<?php
+
+use App\Http\Controllers\AlpineTestController;
+use App\Http\Controllers\LivewireTestController;
+use Illuminate\Support\Facades\Route;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::get('/', function () {
+  return view('welcome');
+});
+
+Route::middleware(['auth:sanctum', 'verified'])
+  ->get('/dashboard', function () {
+    return view('dashboard');
+  })
+  ->name('dashboard');
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->name('livewire-test.')
+  ->group(function () {
+    Route::get('index', 'index')->name('index');
+    Route::get('register', 'register')->name('register');
+  });
+
+Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
+```
+
+- `app/Http/Controllers/AlpineTestController.php`を編集<br>
+
+```php:AlpineTestController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class AlpineTestController extends Controller
+{
+  public function index()
+  {
+    return view('alpine-test.index');
+  }
+}
+```
+
+- `resources/views/alpine-test`ディレクトリを作成<br>
+
+* `resources/views/alpine-test/index.blade.php`を作成<br>
+
+```html:index.blade.php
+Alpineテスト
+```
