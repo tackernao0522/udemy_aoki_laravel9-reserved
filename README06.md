@@ -85,3 +85,29 @@ x-data 属性のあるタグの中で x-data を参照できる<br>
   </body>
 </html>
 ```
+
+## 38 イベント
+
+### Alpine.js のイベント
+
+https://alpinejs.dev/essentials/events <br>
+
+https://alpinejs.dev/directives/on <br>
+
+x-on:click="" 省略形 @click=""<br>
+
+オプション(修飾子)<br>
+.prevent HTML デフォルト動作を防ぐ<br>
+.stop イベント伝搬を防ぐ<br>
+.away 対象タグ以外をクリックしたら
+.window Window オブジェクトにイベントリスナー登録<br>
+(JavaScript は全てオブジェクト(ブラウザもオブジェクト)ロード、スクロール、ブラウザサイズなどを全てイベントとして検知可能)<br>
+
+### コードを読んでみる
+
+`layouts/app.blade.php`の<br>
+`@livewire('navigation-menu')`<br>
+
+(vendor/laravel/jetstream/src/JetstreamServiceProvider.php でコンポーネント登録されている)<br>
+
+実態は `views/navigation-menu.blade.php`<br>
