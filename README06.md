@@ -132,3 +132,16 @@ x-on:click="" 省略形 @click=""<br>
   <div x-show="open" x-transition:enter (6種類) @click="open = false"></div>
 </div>
 ```
+
+## 40 ウィンドウイベントのリッスン
+
+`resource/views/profile/delete-user-form.blade.php`内の<br>
+`x-on:confirming-delete-user.window=""`<br>
+
+イベント発火したらそのタイミングで処理を開始<br>
+`vendor/laravel/jetstream/src/Http/Livewire/DeleteUserForm.php`<br>
+`dispatchBrowserEvent('confirming-delete-user')`<br>
+
+Livewire マニュアルのイベントを参照<br>
+
+https://readouble.com/livewire/2.x/ja/events.html (JavaScript でイベントをリッスンする)<br>
