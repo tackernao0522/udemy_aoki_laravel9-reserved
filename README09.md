@@ -5,7 +5,7 @@
 php artisan make:model Event -a (-a は all の略)<br>
 
 `Models/Event.php`<br>
-`Controllers/EventCOntroller.php`(各メソッド付き CRUD)<br>
+`Controllers/EventController.php`(各メソッド付き CRUD)<br>
 `database/migrations/event_table.php`<br>
 `database/seeders/EventSeeder.php`<br>
 `database/factories/EventFactory.php`<br>
@@ -85,4 +85,69 @@ Route::controller(LivewireTestController::class)
   });
 
 Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
+```
+
+## 46 Event のマイグレーションファイル
+
+### マイグレーション設定
+
+`database/migrations/events_table.php`<br>
+
+```php:events_table.php
+public function up()
+{
+  Schema::create('events', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->text('information');
+    $table->integer('max_people');
+    $table->datetime('start_date');
+    $table->datetime('end_date');
+    $table->boolean('is_visible');
+    $table->timestamps();
+  })
+}
+```
+
+### ハンズオン
+
+- `database/migration/create_events_table.php`を編集<br>
+
+```php:create_events_table.php
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration {
+  /**
+   * Run the migrations.
+   *
+   * @return void
+   */
+  public function up()
+  {
+    Schema::create('events', function (Blueprint $table) {
+      $table->id();
+      $table->string('name');
+      $table->text('information');
+      $table->integer('max_people');
+      $table->datetime('start_date');
+      $table->datetime('end_date');
+      $table->boolean('is_visible');
+      $table->timestamps();
+    });
+  }
+
+  /**
+   * Reverse the migrations.
+   *
+   * @return void
+   */
+  public function down()
+  {
+    Schema::dropIfExists('events');
+  }
+};
 ```
