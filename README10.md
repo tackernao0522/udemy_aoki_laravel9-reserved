@@ -1,3 +1,27 @@
+## 49 アクセス制限 @can
+
+### navidation-menu.blade.php
+
+表示はするけどルーティング(middleware)で 403 アクセス制限<br>
+
+```php:navigation-menu.blade.php
+<x-jet-nav-link
+  href="{{ route('events.index') }}" :active="request()->routeIs('events.index')">
+  イベント管理
+</x-jet-nav-link>
+
+// manager以上でなければ表示もしない
+@can('manager-higher')
+<x-jet-nav-link
+  href="{{ route(''events.index') }}" :active="request()->routeIs('events.index)">
+  イベント管理
+</x-jet-nav-link>
+@endcan
+```
+
+- `resources/views/navigation-menu.blade.php`を編集<br>
+
+```php:navigation-menu.blade.php
 <nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,11 +39,13 @@
                     <x-jet-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-jet-nav-link>
+                    // 追加
                     @can('manager-higher')
                         <x-jet-nav-link href="{{ route('events.index') }}" :active="request()->routeIs('events.index')">
                             イベント管理
                         </x-jet-nav-link>
                     @endcan
+                    // ここまで
                 </div>
             </div>
 
@@ -243,3 +269,113 @@
         </div>
     </div>
 </nav>
+```
+
+`例`<br>
+
+`EventController.php`<br>
+
+```php:EventController.php
+public function index()
+{
+  return view('manager.events.index);
+}
+```
+
+`resources/views/manager/events/index.blade.php`<br>
+
+### ハンズオン
+
+- `app/Http/Controllers/EventController.php`を編集<br>
+
+```php:EventController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
+use App\Models\Event;
+
+class EventController extends Controller
+{
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function index()
+  {
+    // 追加
+    return view('manager.events.index');
+  }
+
+  /**
+   * Show the form for creating a new resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function create()
+  {
+    //
+  }
+
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param  \App\Http\Requests\StoreEventRequest  $request
+   * @return \Illuminate\Http\Response
+   */
+  public function store(StoreEventRequest $request)
+  {
+    //
+  }
+
+  /**
+   * Display the specified resource.
+   *
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function show(Event $event)
+  {
+    //
+  }
+
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function edit(Event $event)
+  {
+    //
+  }
+
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  \App\Http\Requests\UpdateEventRequest  $request
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function update(UpdateEventRequest $request, Event $event)
+  {
+    //
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function destroy(Event $event)
+  {
+    //
+  }
+}
+```
+
++ `$ mkdir resources/views/manager && mkdir $_/events && touch $_/index.blade.php`を実行<br>
