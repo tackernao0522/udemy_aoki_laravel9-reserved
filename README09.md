@@ -151,3 +151,42 @@ return new class extends Migration {
   }
 };
 ```
+
+## 47 ダミーデータの注意(開始日時と終了日時)
+
+### ダミーデータ生成
+
+`config/app.php`<br>
+
+```php:app.php
+'faker_locale' => 'ja_JP'
+```
+
+php artisan cache:clear<br>
+php artisan config:clear<br>
+
+faker チートシート<br>
+https://qiita.com/tosite0345/items/1d47961947a6770053af <br>
+
+開始日時より終了日時を後にする必要がある<br>
+
+faker で datetime を作ると DateTime 型
+https://www.php.net/manual/ja/class.datetime.php <br>
+
+### 開始時間と終了時間の整合
+
+`database/factories/EventFacgtory.php`<br>
+
+```php:EventFactory.php
+public function definition() {
+    $dummyDate = $this->faker->dateTimeThisMonth;
+    return [
+    'name' => $this->faker->name,
+    'information' => $this->faker->realText,
+    'max_people' => $this->faker->numberBetween(1,20),
+    'start_date' => $dummyDate->format('Y-m-d H:i:s'),
+    'end_date' => $dummyDate->modify('+1hour')->format('Y-m-d H:i:s'), 'is_visible' => $this->faker->boolean
+    ];
+  }
+}
+```
