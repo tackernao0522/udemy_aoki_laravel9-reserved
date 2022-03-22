@@ -9,8 +9,8 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <section class="text-gray-600 body-font">
-                    <div class="container px-5 py-24 mx-auto">
-                        <div class="lg:w-2/3 w-full mx-auto overflow-auto">
+                    <div class="container px-5 py-4 mx-auto">
+                        <div class="w-full mx-auto overflow-auto">
                             <table class="table-auto w-full text-left whitespace-no-wrap">
                                 <thead>
                                     <tr>
@@ -35,46 +35,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td class="px-4 py-3">Start</td>
-                                        <td class="px-4 py-3">5 Mb/s</td>
-                                        <td class="px-4 py-3">15 GB</td>
-                                        <td class="px-4 py-3 text-lg text-gray-900">Free</td>
-                                        <td class="w-10 text-center">
-                                            <input name="plan" type="radio">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3">Pro</td>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3">25 Mb/s</td>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3">25 GB</td>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3 text-lg text-gray-900">$24</td>
-                                        <td class="border-t-2 border-gray-200 w-10 text-center">
-                                            <input name="plan" type="radio">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3">Business</td>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3">36 Mb/s</td>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3">40 GB</td>
-                                        <td class="border-t-2 border-gray-200 px-4 py-3 text-lg text-gray-900">$50</td>
-                                        <td class="border-t-2 border-gray-200 w-10 text-center">
-                                            <input name="plan" type="radio">
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="border-t-2 border-b-2 border-gray-200 px-4 py-3">Exclusive</td>
-                                        <td class="border-t-2 border-b-2 border-gray-200 px-4 py-3">48 Mb/s</td>
-                                        <td class="border-t-2 border-b-2 border-gray-200 px-4 py-3">120 GB</td>
-                                        <td
-                                            class="border-t-2 border-b-2 border-gray-200 px-4 py-3 text-lg text-gray-900">
-                                            $72</td>
-                                        <td class="border-t-2 border-b-2 border-gray-200 w-10 text-center">
-                                            <input name="plan" type="radio">
-                                        </td>
-                                    </tr>
+                                    @foreach ($events as $event)
+                                        <tr>
+                                            <td class="px-4 py-3">{{ $event->name }}</td>
+                                            <td class="px-4 py-3">{{ $event->start_date }}</td>
+                                            <td class="px-4 py-3">{{ $event->end_date }}</td>
+                                            <td class="px-4 py-3">後程対応</td>
+                                            <td class="px-4 py-3">{{ $event->max_people }}</td>
+                                            <td class="px-4 py-3">{{ $event->is_visible }}</td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
+                            {{ $events->links() }}
                         </div>
                         <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">
                             <a class="text-indigo-500 inline-flex items-center md:mb-2 lg:mb-0">Learn More
