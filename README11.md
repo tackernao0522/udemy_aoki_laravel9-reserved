@@ -349,3 +349,92 @@ class EventController extends Controller
     </div>
 </x-app-layout>
 ```
+
+## 52 flatpickr インストール
+
+### flatpickr v4
+
+日付・時間を選択<br>
+
+デートピッカーの 1 つ<br>
+
+設置が簡単、軽量、jQuery なし<br>
+
+### flatpickr インストール・設置
+
+インストール npm i flatpickr@^4 --save<br>
+
+`resources/js/flatpickr.js`<br>
+
+```js:flatpickr.js
+import flatpickr from 'flatpickr'
+
+flatpickr('#event_date', {})
+```
+
+`resorces/css/app.css`<br>
+
+```css:app.css
+@import 'flatpickr/dist/flatpickr.css';
+```
+
+`webpack.mix.js`<br>
+
+```js:webpack.mix.js
+.js('resources/js/flatpickr.js', 'public/js')
+```
+
+### ハンズオン
+
+- `$ npm i flatpickr@^4 --save`を実行<br>
+
+* `$ touch resources/js/flatpickr.js`を実行<br>
+
+- `resources/js/flatpickr.js`を編集<br>
+
+```js:flatpickr.js
+import flatpickr from 'flatpickr'
+
+flatpickr('#event_date', {})
+```
+
+- `resources/css/app.css`を編集<br>
+
+```css:app.css
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* 追加 */
+@import 'flatpickr/dist/flatpickr.css';
+```
+
+- `webpack.mix.js`を編集<br>
+
+```js:webpack.mix.js
+const mix = require('laravel-mix')
+
+/*
+ |--------------------------------------------------------------------------
+ | Mix Asset Management
+ |--------------------------------------------------------------------------
+ |
+ | Mix provides a clean, fluent API for defining some Webpack build steps
+ | for your Laravel applications. By default, we are compiling the CSS
+ | file for the application as well as bundling up all the JS files.
+ |
+ */
+
+mix
+  .js('resources/js/app.js', 'public/js')
+  // 追加
+  .js('resources/js/flatpickr.js', 'public/js')
+  .postCss('resources/css/app.css', 'public/css', [
+    require('postcss-import'),
+    require('tailwindcss'),
+  ])
+
+if (mix.inProduction()) {
+  mix.version()
+}
+```
