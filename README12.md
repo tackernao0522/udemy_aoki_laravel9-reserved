@@ -241,3 +241,118 @@ flatpickr('#start_time', setting)
 
 flatpickr('#end_time', setting)
 ```
+
+## 55 イベント新規登録 View
+
+`resources/views/manager/events/create.blade.php`<br>
+`auth/login.blade.php`を参考<br>
+
+コンポーネントは components フォルダを作成し`components/textarea.blade.php`を作成<br>
+`<x-textarea>`で使用できる<br>
+
+`index.blade.php`にボタン追加<br>
+
+```php:index.blade.php
+<button onlick="location.href='{{ route('events.create') }}'"></button>
+```
+
+### Event 新規登録
+
+フォームの抜粋 name の値<br>
+
+`event_name`・・バリデーションで表示させるため<br>
+`information`<br>
+`event_date`<br>
+`start_time`<br>
+`end_time`<br>
+`max_people`<br>
+`is_visible`<br>
+
+### バリデーション 日本語化
+
+`lang/ja/validation.php`<br>
+
+```php:validation.php
+'attributes' => [
+  'email' => 'メールアドレス',
+  'password' => 'パスワード',
+  'name' => '名前',
+  'event_name' => 'イベント名',
+  'information' => 'イベントの日付',
+  'end_time' => '終了時間',
+  'start_time' => '開始時間',
+  'max_people' => '定員',
+],
+```
+
+### ハンズオン
+
+- `resources/views/manager/events/index.blade.php`を編集<br>
+
+```php:index.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            イベント管理
+        </h2>
+    </x-slot>
+
+    <div class="py-4">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <section class="text-gray-600 body-font">
+                    <div class="container px-5 py-4 mx-auto">
+                        // 追加
+                        <button onclick="location.href='{{ route('events.create') }}'"
+                            class="flex mb-4 ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">新規登録</button>
+                        // ここまで
+                        <div class="w-full mx-auto overflow-auto">
+                            <table class="table-auto w-full text-left whitespace-no-wrap">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            イベント名</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            開始日時</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            終了日時</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            予約人数</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            定員</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            表示・非表示</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($events as $event)
+                                        <tr>
+                                            <td class="px-4 py-3">{{ $event->name }}</td>
+                                            <td class="px-4 py-3">{{ $event->start_date }}</td>
+                                            <td class="px-4 py-3">{{ $event->end_date }}</td>
+                                            <td class="px-4 py-3">後程対応</td>
+                                            <td class="px-4 py-3">{{ $event->max_people }}</td>
+                                            <td class="px-4 py-3">{{ $event->is_visible }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                            {{ $events->links() }}
+                        </div>
+                        // 編集
+                        <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">
+
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
