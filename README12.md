@@ -423,3 +423,227 @@ flatpickr('#end_time', setting)
     <script src="{{ mix('js/flatpickr.js') }}"></script>
 </x-app-layout>
 ```
+
+## 57 新規登録 フォーム調整その 2
+
+- `$ mkdir resources/views/components && touch $_/textarea.blade.php`を実行<br>
+
+- `resources/views/components/textarea.blade.php`を編集<br>
+
+```php:textarea.blade.php
+@props(['disabled' => false])
+
+<textarea {{ $disabled ? 'disabled' : '' }} {!! $attributes->merge(['class' => 'border-gray-300 focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm']) !!}>{{ $slot }}</textarea>
+```
+
+- `resources/views/manager/events/create.blade.php`を編集<br>
+
+```php:create.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            イベント新規登録
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <div class="max-w-2xl py-4 mx-auto">
+                    <x-jet-validation-errors class="mb-4" />
+
+                    @if (session('status'))
+                        <div class="mb-4 font-medium text-sm text-green-600">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('events.store') }}">
+                        @csrf
+
+                        <div>
+                            <x-jet-label for="event_name" value="イベント名" />
+                            <x-jet-input id="event_name" class="block mt-1 w-full" type="text" name="event_name"
+                                :value="old('event_name')" required autofocus />
+                        </div>
+
+                        <div class="mt-4">
+                            <x-jet-label for="information" value="イベント詳細" />
+                            <x-textarea row="3" id="information" class="block mt-1 w-full">{{ old('information') }}
+                            </x-textarea>
+                        </div>
+
+                        <div class="md:flex justify-between">
+                            <div class="mt-4">
+                                <x-jet-label for="event_date" value="イベント日付" />
+                                <x-jet-input id="event_date" class="block mt-1 w-full" type="text" name="event_date"
+                                    required />
+                            </div>
+
+                            <div class="mt-4">
+                                <x-jet-label for="start_time" value="開始時間" />
+                                <x-jet-input id="start_time" class="block mt-1 w-full" type="text" name="start_time"
+                                    required />
+                            </div>
+
+                            <div class="mt-4">
+                                <x-jet-label for="end_time" value="終了時間" />
+                                <x-jet-input id="end_time" class="block mt-1 w-full" type="text" name="end_time"
+                                    required />
+                            </div>
+                        </div>
+                        <div class="md:flex justify-between items-end">
+                            <div class="mt-4">
+                                <x-jet-label for="max_people" value="定員数" />
+                                <x-jet-input id="max_people" class="block mt-1 w-full" type="number" name="max_people"
+                                    required />
+                            </div>
+                            <div class="flex space-x-4 justify-around">
+                                <input type="radio" name="is_visible" value="1" checked />表示
+                                <input type="radio" name="is_visible" value="0" />非表示
+                            </div>
+                            <x-jet-button class="ml-4">
+                                新規登録
+                            </x-jet-button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="{{ mix('js/flatpickr.js') }}"></script>
+</x-app-layout>
+```
+
+- `app/Http/Requests/StoreEventRequest.php`を編集<br>
+
+```php:StoreEventRequest.php
+<?php
+
+namespace App\Http\Requests;
+
+use Illuminate\Foundation\Http\FormRequest;
+
+class StoreEventRequest extends FormRequest
+{
+  /**
+   * Determine if the user is authorized to make this request.
+   *
+   * @return bool
+   */
+  public function authorize()
+  {
+    // trueにしておく
+    return true;
+  }
+
+  /**
+   * Get the validation rules that apply to the request.
+   *
+   * @return array
+   */
+  public function rules()
+  {
+    return [
+        //
+      ];
+  }
+}
+```
+
+- `app/Http/Controllers/EventController.php`を編集<br>
+
+```php:EventController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\StoreEventRequest;
+use App\Http\Requests\UpdateEventRequest;
+use App\Models\Event;
+use Illuminate\Support\Facades\DB;
+
+class EventController extends Controller
+{
+  /**
+   * Display a listing of the resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function index()
+  {
+    $events = DB::table('events')
+      ->orderBy('start_date', 'ASC')
+      ->paginate(10);
+
+    return view('manager.events.index', compact('events'));
+  }
+
+  /**
+   * Show the form for creating a new resource.
+   *
+   * @return \Illuminate\Http\Response
+   */
+  public function create()
+  {
+    return view('manager.events.create');
+  }
+
+  /**
+   * Store a newly created resource in storage.
+   *
+   * @param  \App\Http\Requests\StoreEventRequest  $request
+   * @return \Illuminate\Http\Response
+   */
+  public function store(StoreEventRequest $request)
+  {
+    // 追加
+    dd($request);
+  }
+
+  /**
+   * Display the specified resource.
+   *
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function show(Event $event)
+  {
+    //
+  }
+
+  /**
+   * Show the form for editing the specified resource.
+   *
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function edit(Event $event)
+  {
+    //
+  }
+
+  /**
+   * Update the specified resource in storage.
+   *
+   * @param  \App\Http\Requests\UpdateEventRequest  $request
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function update(UpdateEventRequest $request, Event $event)
+  {
+    //
+  }
+
+  /**
+   * Remove the specified resource from storage.
+   *
+   * @param  \App\Models\Event  $event
+   * @return \Illuminate\Http\Response
+   */
+  public function destroy(Event $event)
+  {
+    //
+  }
+}
+```
