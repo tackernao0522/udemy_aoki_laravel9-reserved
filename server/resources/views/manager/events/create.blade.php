@@ -8,7 +8,12 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                <input type="text" id="event_date">
+                日付
+                <input type="text" id="event_date" name="event_date">
+                開始時間
+                <input type="text" id="start_time" name="start_time">
+                終了時間
+                <input type="text" id="end_time" name="end_time">
             </div>
         </div>
     </div>
