@@ -42,6 +42,20 @@ class EventController extends Controller
      */
     public function store(StoreEventRequest $request)
     {
+        $check = DB::table('events')
+            ->whereDate('start_date', $request['event_date']) // 日にち
+            ->whereTime('end_date', '>', $request['start_time'])
+            ->whereTime('start_date', '<', $request['end_time'])
+            ->exists(); // 存在確認
+
+        // dd($check);
+        if ($check) {
+            // 存在したら
+            session()->flash('status', 'この時間帯は既に他の予約が存在します。');
+
+            return redirect()->back();
+        }
+
         // dd($request);
         // formatは event_date, start_time, end_time modelはstart_date, end_date
         $start = $request['event_date'] . " " . $request['start_time'];
