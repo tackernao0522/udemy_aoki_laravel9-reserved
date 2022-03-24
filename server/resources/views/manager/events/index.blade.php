@@ -10,6 +10,11 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                 <section class="text-gray-600 body-font">
                     <div class="container px-5 py-4 mx-auto">
+                        @if (session('status'))
+                            <div class="mb-4 font-medium text-sm text-green-600">
+                                {{ session('status') }}
+                            </div>
+                        @endif
                         <button onclick="location.href='{{ route('events.create') }}'"
                             class="flex mb-4 ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">新規登録</button>
                         <div class="w-full mx-auto overflow-auto">
