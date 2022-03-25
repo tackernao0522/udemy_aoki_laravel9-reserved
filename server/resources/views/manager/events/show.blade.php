@@ -25,7 +25,7 @@
 
                         <div class="mt-4">
                             <x-jet-label for="information" value="イベント詳細" />
-                            {!! e(old('information', $event->information)) !!}
+                            {!! e(old($event->information)) !!}
                         </div>
 
                         <div class="md:flex justify-between">

@@ -284,7 +284,7 @@ class EventController extends Controller
 
                         <div class="mt-4">
                             <x-jet-label for="information" value="イベント詳細" />
-                            {!! e(old('information', $event->information)) !!}
+                            {!! e($event->information)) !!}
                         </div>
 
                         <div class="md:flex justify-between">
@@ -327,3 +327,59 @@ class EventController extends Controller
     <script src="{{ mix('js/flatpickr.js') }}"></script>
 </x-app-layout>
 ```
+
+## 64 アクセサ・ミューテタ・PHP アロー関数
+
+### アクセサとミューテタ
+
+Laravel8 https://readouble.com/laravel/8.x/ja/eloquent-mutators.html (アクセサ／ミューテタ)<br>
+Laravel9 https://readouble.com/laravel/9.x/ja/eloquent-mutators.html (アクセサ／ミューテタ)<br>
+
+DB に情報保存時や DB から情報取得時にデータを加工する機能<br>
+
+`コントローラなど`取得(get) アクセサ<-> 保存(set) ミューテタ`データベース<br>
+
+### Laravel8 まで
+
+モデル内に記載<br>
+
+```php:Model.php
+// アクセサ(取得する方)
+public function getFirstNameAttribute($value)
+{
+  return ucfirst($value);
+}
+
+// ミューテタ(保存する方)
+public function setFirstNameAttribute($value)
+{
+  $this->attributes['first_name'] = strtolower($value);
+}
+```
+
+### Laravel9
+
+モデル内に記載<br>
+
+```php:Model.php
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+protected function firstName(): Attribute // 戻り値の型
+{
+  return new Attribute(
+    get: fn ($value) => ucfirst($value), // アクセサ
+    set: fn ($value) => strtolower($value), // ミューテタ
+  );
+}
+```
+
+`$user->first_name = 'Sally'; // 使う時はモデル->メソッド名`<br>
+
+### PHP7.4 アロー関数
+
+無名関数を簡単に書ける文法<br>
+(PHP8.0 時点では 1 行でしか書けない)<br>
+
+fn($x) => $x + \$y;
+
+https://www.php.net/manual/ja/functions.arrow.php <br>
