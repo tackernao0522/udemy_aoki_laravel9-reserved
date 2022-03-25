@@ -44,10 +44,10 @@ class EventController extends Controller
     public function store(StoreEventRequest $request)
     {
         $check = EventService::checkEventDuplication(
-                $request['event_date'],
-                $request['start_time'],
-                $request['end_time']
-            );
+            $request['event_date'],
+            $request['start_time'],
+            $request['end_time']
+        );
 
         if ($check) {
             // 存在したら
@@ -81,7 +81,10 @@ class EventController extends Controller
      */
     public function show(Event $event)
     {
-        //
+        // dd($event);
+        $event = Event::findOrFail($event->id);
+
+        return view('manager.events.show', compact('event'));
     }
 
     /**
