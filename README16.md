@@ -1,3 +1,8 @@
+## 66 Show ビュー側の調整
+
+- `resources/views/manager/events/show.blade.php`を編集<br>
+
+```php:show.blade.php
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -63,3 +68,4 @@
     </div>
     <script src="{{ mix('js/flatpickr.js') }}"></script>
 </x-app-layout>
+```
