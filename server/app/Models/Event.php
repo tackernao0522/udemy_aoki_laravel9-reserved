@@ -17,13 +17,20 @@ class Event extends Model
         'max_people',
         'start_date',
         'end_date',
-        'is_visible',
+        'is_visible'
     ];
 
     protected function eventDate(): Attribute
     {
         return new Attribute(
             get: fn () => Carbon::parse($this->start_date)->format('Y年m月d日')
+        );
+    }
+
+    protected function editEventDate(): Attribute
+    {
+        return new Attribute(
+            get: fn () => Carbon::parse($this->start_date)->format('Y-m-d')
         );
     }
 
