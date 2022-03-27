@@ -151,6 +151,16 @@ class EventController extends Controller
         return to_route('events.index'); // 名前付きルート
     }
 
+    public function past()
+    {
+        $today = Carbon::today();
+        $events = DB::table('events')
+            ->whereDate('start_date', '<', $today)
+            ->orderBy('start_date', 'desc')
+            ->paginate(10);
+
+        return view('manager.events.past', compact('events'));
+    }
     /**
      * Remove the specified resource from storage.
      *
