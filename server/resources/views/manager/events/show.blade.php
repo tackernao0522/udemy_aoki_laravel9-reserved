@@ -52,9 +52,11 @@
                             <div class="flex space-x-4 justify-around">
                                 {{ $event->is_visible ? '表示中' : '非表示' }}
                             </div>
-                            <x-jet-button class="ml-4">
-                                編集する
-                            </x-jet-button>
+                            @if ($event->eventDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
+                                <x-jet-button class="ml-4">
+                                    編集する
+                                </x-jet-button>
+                            @endif
                         </div>
                     </form>
                 </div>

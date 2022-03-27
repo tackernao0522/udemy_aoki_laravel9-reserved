@@ -18,8 +18,11 @@ class EventController extends Controller
      */
     public function index()
     {
+        $today = Carbon::today();
+
         $events = DB::table('events')
-            ->orderBy('start_date', 'ASC')
+            ->whereDate('start_date', '>=', $today)
+            ->orderBy('start_date', 'desc')
             ->paginate(10);
 
         return view('manager.events.index', compact('events'));
@@ -99,12 +102,17 @@ class EventController extends Controller
      */
     public function edit(Event $event)
     {
-        $event = Event::findOrFail($event->id);
-        $eventDate = $event->editEventDate;
-        $startTime = $event->startTime;
-        $endTime = $event->endTime;
+        if ($event->eventDate >= Carbon::today()->format('Y年m月d日')) {
+            $event = Event::findOrFail($event->id);
+            $eventDate = $event->editEventDate;
+            $startTime = $event->startTime;
+            $endTime = $event->endTime;
 
-        return view('manager.events.edit', compact('event', 'eventDate', 'startTime', 'endTime'));
+            return view('manager.events.edit', compact('event', 'eventDate', 'startTime', 'endTime'));
+        } else {
+            session()->flash('status', '過去のイベントは更新できません。');
+            return redirect()->route('events.index');
+        }
     }
 
     /**
