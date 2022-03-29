@@ -23,11 +23,13 @@ class EventController extends Controller
         $reservedPeople = DB::table('reservations')
             ->select('event_id', DB::raw('sum(number_of_people) as numbe_of_people'))
             ->groupBy('event_id');
-        dd($reservedPeople);
 
         $events = DB::table('events')
-            ->whereDate('start_date', '>=', $today)
-            ->orderBy('start_date', 'desc')
+            ->leftJoinSub($reservedPeople, 'reservedPeople', function ($join) {
+                $join->on('events.id', '=', 'reservedPeople.event_id');
+            })
+            ->whereDate('events.start_date', '>=', $today)
+            ->orderBy('events.start_date', 'desc')
             ->paginate(10);
 
         return view('manager.events.index', compact('events'));
