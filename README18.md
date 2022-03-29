@@ -227,7 +227,7 @@ class EventController extends Controller
     $today = Carbon::today();
 
     $reservedPeople = DB::table('reservations')
-      ->select('event_id', DB::raw('sum(number_of_people) as numbe_of_people'))
+      ->select('event_id', DB::raw('sum(number_of_people) as number_of_people'))
       ->groupBy('event_id');
     dd($reservedPeople);
 
@@ -457,7 +457,7 @@ class EventController extends Controller
 
     // 編集
     $reservedPeople = DB::table('reservations')
-      ->select('event_id', DB::raw('sum(number_of_people) as numbe_of_people'))
+      ->select('event_id', DB::raw('sum(number_of_people) as number_of_people'))
       ->groupBy('event_id');
 
     // 編集
@@ -465,8 +465,8 @@ class EventController extends Controller
       ->leftJoinSub($reservedPeople, 'reservedPeople', function ($join) {
         $join->on('events.id', '=', 'reservedPeople.event_id');
       })
-      ->whereDate('events.start_date', '>=', $today)
-      ->orderBy('events.start_date', 'desc')
+      ->whereDate('start_date', '>=', $today)
+      ->orderBy('start_date', 'desc')
       ->paginate(10);
 
     return view('manager.events.index', compact('events'));
