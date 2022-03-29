@@ -93,12 +93,14 @@ class EventController extends Controller
     {
         // dd($event);
         $event = Event::findOrFail($event->id);
+        $users = $event->users;
+        // dd($event, $users);
         $eventDate = $event->editEventDate;
         $startTime = $event->startTime;
         $endTime = $event->endTime;
         // dd($eventDate, $startTime, $endTime);
 
-        return view('manager.events.show', compact('event', 'eventDate', 'startTime', 'endTime'));
+        return view('manager.events.show', compact('event', 'users', 'eventDate', 'startTime', 'endTime'));
     }
 
     /**
