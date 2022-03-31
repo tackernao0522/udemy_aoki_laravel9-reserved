@@ -146,6 +146,7 @@ flatpickr('#event_date', {
   maxDate: new Date().fp_incr(30),
 })
 
+// 追加
 flatpickr('#calendar', {
   locale: Japanese,
   minDate: 'today',
@@ -160,10 +161,182 @@ const setting = {
   time_24hr: true,
   minTime: '10:00',
   maxTime: '20:00',
+  // 追加
   minuteIncrement: 30,
 }
 
 flatpickr('#start_time', setting)
 
 flatpickr('#end_time', setting)
+```
+
+## 81 livewire calendar の作成
+
+### Livewire でカレンダー
+
+php artisan make:livewire Calendar<br>
+
+`app/Http/Livewire/Calendar.php`<br>
+
+`resources/views/livewire/calendar.blade.php`が生成<br>
+
+### app/Http/Livewire/Calendar.php
+
+```php:Calendar.php
+use Carbon\Carbon;
+
+class Calendar extends Component
+{
+  public $currentDate;
+  public $day;
+  public $currentWeek;
+
+  public function mount()
+  {
+    $this->currentDate = Carbon::tody();
+    $this->currentWeek = [];
+
+    for ($i = 0; $i < 7; $i++) {
+      $this->day = Carbon::tody()
+        ->addDays($i)
+        ->format('m月d日');
+      array_push($this->currentWeek, $this->day);
+    }
+    // dd($this->currentWeek);
+  }
+}
+```
+
+### livewire/calendar.blade.php
+
+```php:calendar.blade.php
+<div>
+  <x-jet-input id="calendar" class="block mt-1 w-full" type="text" name="calendar" />
+    {{ $currentDate }}
+    <div class="flex">
+      @for ($day = 0; $day < 7; $day++)
+        {{ $currentWeek[$day] }}
+      @endfor
+    </div>
+</div>
+```
+
+`views/calendar.php`<br>
+
+```php:calendar.blade.php
+@livewire('calendar'); // コンポーネント読み込み
+```
+
+### ハンズオン
+
+- `$ php artisan make:livewire Calendar`を実行<br>
+
+* `app/Http/Livewire/Calendar.php`を編集<br>
+
+```php:Calendar.php
+<?php
+
+namespace App\Http\Livewire;
+
+use Carbon\Carbon;
+use Livewire\Component;
+
+class Calendar extends Component
+{
+  public $currentDate; // 現在の日付
+  public $day;
+  public $currentWeek; // 一週間分
+
+  public function mount()
+  {
+    $this->currentDate = Carbon::today();
+    $this->currentWeek = [];
+
+    for ($i = 0; $i < 7; $i++) {
+      $this->day = Carbon::today()
+        ->addDays($i)
+        ->format('m月d日');
+      array_push($this->currentWeek, $this->day);
+    }
+    dd($this->currentWeek);
+  }
+
+  public function render()
+  {
+    return view('livewire.calendar');
+  }
+}
+```
+
+- `resources/views/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<!DOCTYPE html>
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <title>{{ config('app.name', 'Laravel') }}</title>
+
+    <!-- Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="{{ mix('css/app.css') }}">
+
+    @livewireStyles
+
+    <!-- Scripts -->
+    <script src="{{ mix('js/app.js') }}" defer></script>
+</head>
+
+<body class="font-sans antialiased">
+    // 編集
+    @livewire('calendar')
+    <script src="{{ mix('js/flatpickr.js') }}"></script>
+    @livewireScripts
+</body>
+
+</html>
+```
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    カレンダー
+    <x-jet-input id="calendar" class="block mt-1 w-full" type="text" name="calendar" />
+</div>
+```
+
+- http://localhost/ にアクセスすると<br>
+
+```:browser
+^ array:7 [▼
+  0 => "03月31日"
+  1 => "04月01日"
+  2 => "04月02日"
+  3 => "04月03日"
+  4 => "04月04日"
+  5 => "04月05日"
+  6 => "04月06日"
+]
+```
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    カレンダー
+    <x-jet-input id="calendar" class="block mt-1 w-full" type="text" name="calendar" />
+    {{ $currentDate }}
+    <div class="flex">
+        @for ($day = 0; $day < 7; $day++)
+            {{ $currentWeek[$day] }}
+        @endfor
+    </div>
+</div>
 ```
