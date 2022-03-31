@@ -21,8 +21,7 @@
 </head>
 
 <body class="font-sans antialiased">
-    カレンダー
-    <x-jet-input id="calendar" class="block mt-1 w-full" type="text" name="calendar" />
+    @livewire('calendar')
     <script src="{{ mix('js/flatpickr.js') }}"></script>
     @livewireScripts
 </body>
