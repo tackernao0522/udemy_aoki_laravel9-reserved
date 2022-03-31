@@ -340,3 +340,137 @@ class Calendar extends Component
     </div>
 </div>
 ```
+
+## 82 wire:change で日付を更新
+
+### datepickr を変更したら値も変える
+
+`views/livewire/calendar.blade.php`<br>
+
+```php:calendar.blade.php
+<input id="calendar" class="block mt-1 w-full" type="text" name="calendar" value="{{ $currentDate }}"> wire:change="getDate($event.target.value)" />
+```
+
+`app/Http/Livewire/Calendar.php`<br>
+
+```php:Calendar.php
+<?php
+
+namespace App\Http\Livewire;
+
+use Carbon\Carbon;
+use Livewire\Component;
+
+class Calendar extends Component
+{
+  public $currentDate;
+  public $day;
+  public $currentWeek;
+
+  public function mount()
+  {
+    $this->currentDate = Carbon::today();
+    $this->currentWeek = [];
+
+    for ($i = 0; $i < 7; $i++) {
+      $this->day = Carbon::today()
+        ->addDays($i)
+        ->format('m月d日');
+      array_push($this->currentWeek, $this->day);
+    }
+    // dd($this->currentWeek);
+  }
+
+  public function getDate($date)
+  {
+    $this->currentDate = $date; // 文字列
+    $this->currentWeek = [];
+
+    for ($i = 0; $i < 7; $i++) {
+      $this->day = Carbon::parse($this->currentDate)
+        ->addDays($i)
+        ->format('m月d日'); // parseでCarbonインスタンスに変換後 日付を計算
+      array_push($this->currentWeek, $this->day);
+    }
+  }
+
+  public function render()
+  {
+    return view('livewire.calendar');
+  }
+}
+```
+
+### ハンズオン
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    カレンダー
+    <input
+        id="calendar"
+        class="block mt-1 w-full"
+        type="text"
+        name="calendar"
+        value="{{ $currentDate }}"
+        wire:change="getDate($event.target.value)"
+    />
+    <div class="flex">
+        @for ($day = 0; $day < 7; $day++)
+            {{ $currentWeek[$day] }}
+        @endfor
+    </div>
+</div>
+```
+
+- `app/Http/Livewire/Calendar.blade.php`を編集<br>
+
+```php:Calendar.blade.php
+<?php
+
+namespace App\Http\Livewire;
+
+use Carbon\Carbon;
+use Livewire\Component;
+
+class Calendar extends Component
+{
+  public $currentDate;
+  public $day;
+  public $currentWeek;
+
+  public function mount()
+  {
+    $this->currentDate = Carbon::today();
+    $this->currentWeek = [];
+
+    for ($i = 0; $i < 7; $i++) {
+      $this->day = Carbon::today()
+        ->addDays($i)
+        ->format('m月d日');
+      array_push($this->currentWeek, $this->day);
+    }
+    // dd($this->currentWeek);
+  }
+
+  // 追加
+  public function getDate($date)
+  {
+    $this->currentDate = $date; // 文字列
+    $this->currentWeek = [];
+
+    for ($i = 0; $i < 7; $i++) {
+      $this->day = Carbon::parse($this->currentDate)
+        ->addDays($i)
+        ->format('m月d日'); // parseでCarbonインスタンスに変換後 日付を計算
+      array_push($this->currentWeek, $this->day);
+    }
+  }
+
+  public function render()
+  {
+    return view('livewire.calendar');
+  }
+}
+```
