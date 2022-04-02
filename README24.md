@@ -126,3 +126,245 @@ class CalendarLayout extends Component
     </div>
 </x-calendar-layout>
 ```
+
+## 87 Blade コンポーネント(day, calendar-time)
+
+### カレンダーの幅を固定
+
+`resources/css/app.css`<br>
+
+```css:app.css
+.event-calendar {
+  width: 1000px;
+}
+```
+
+`views/calendar.blade.php`<br>
+
+```php:calendar.blade.php
+<div class="py-4">
+  <div class="event-calendar border border-red-400 mx-auto sm:px-6 lg:px-8">
+    <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+      @livewire('calendar')
+    </div>
+  </div>
+</div>
+```
+
+### livewire/calendar.blade.php
+
+```php:calendar.blade.php
+<div class="text-center text-sm">
+  日付を選択してください。本日から最大30日先まで選択可能です。
+</div>
+<input id="calendar" class="block mt-1 mx-auto" type="text" 略 />
+<div class="flex border border-green-400 mx-auto">
+  <x-calendar-time /> // コンポーエンと作成 仮で直書き
+  <x-day />
+  <x-day />
+  <x-day />
+  <x-day />
+  <x-day />
+  <x-day />
+  <x-day />
+</div>
+```
+
+### components ファイル
+
+`resoursec/views/components/calendar-time.blade.php`<br>
+
+```php:calendar.blade.php
+<div>
+  <div class="py-1 px-2 border border-gray-200 text-center">日</div>
+  <div class="py-1 px-2 border border-gray-200 text-center">曜日</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:30</div>
+  ・・・〜20時まで
+</div>
+```
+
+`components/day.blade.php`<br>
+`calendar-time.blade.php`をコピーし幅調整<br>
+
+```
+<div class="w-32">
+  ・・
+</div>
+```
+
+### ハンズオン
+
+- `resources/css/app.css`を編集<br>
+
+```css:app.css
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+@import 'flatpickr/dist/flatpickr.css';
+
+/* 追加 */
+.event-calendar {
+  width: 1000px;
+}
+```
+
+- `resources/views/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<x-calendar-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            イベントカレンダー
+        </h2>
+    </x-slot>
+
+    <div class="py-4">
+        <div class="event-calendar border border-red-400 mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                @livewire('calendar')
+            </div>
+        </div>
+    </div>
+</x-calendar-layout>
+```
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    // 追加
+    <div class="text-center text-sm">
+        日付を選択してください。本日から最大30日先まで選択可能です。
+    </div>
+    // ここまで
+    <input
+        id="calendar"
+        class="block mt-1 mx-auto" // 編集
+        type="text"
+        name="calendar"
+        value="{{ $currentDate }}"
+        wire:change="getDate($event.target.value)"
+    />
+
+    // 追加
+    <div class="flex border border-green-400 mx-auto">
+        <x-calendar-time />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+    </div>
+    // ここまで
+    <div class="flex">
+        @for ($day = 0; $day < 7; $day++)
+            {{ $currentWeek[$day] }}
+        @endfor
+    </div>
+    @foreach ($events as $event)
+        {{ $event->start_date }}<br>
+    @endforeach
+</div>
+```
+
+- `$ touch resources/views/components/calendar-time.blade.php`を実行<br>
+
+* `$ touch resources/views/components/day.blade.php`を実行<br>
+
+- `resources/views/components/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    <div class="py-1 px-2 border border-gray-200 text-center">日</div>
+    <div class="py-1 px-2 border border-gray-200 text-center">曜日</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">14:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">15:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200 text-center">20:00</div>
+</div>
+```
+
+- `resources/views/components/day.blade.php`を編集<br>
+
+```php:day.blade.php
+<div class="w-32">
+  <div class="py-1 px-2 border border-gray-200 text-center">日</div>
+  <div class="py-1 px-2 border border-gray-200 text-center">曜日</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">14:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">15:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:00</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:30</div>
+  <div class="py-1 px-2 h-8 border border-gray-200 text-center">20:00</div>
+</div>
+```
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    <div class="text-center text-sm">
+        日付を選択してください。本日から最大30日先まで選択可能です。
+    </div>
+    <input
+        id="calendar"
+        // 編集 mb-2を追加
+        class="block mt-1 mb-2 mx-auto"
+        type="text"
+        name="calendar"
+        value="{{ $currentDate }}"
+        wire:change="getDate($event.target.value)"
+    />
+
+    <div class="flex border border-green-400 mx-auto">
+        <x-calendar-time />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+        <x-day />
+    </div>
+    <div class="flex">
+        @for ($day = 0; $day < 7; $day++)
+            {{ $currentWeek[$day] }}
+        @endfor
+    </div>
+    @foreach ($events as $event)
+        {{ $event->start_date }}<br>
+    @endforeach
+</div>
+```
