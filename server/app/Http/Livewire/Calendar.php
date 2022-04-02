@@ -3,7 +3,7 @@
 namespace App\Http\Livewire;
 
 use App\Services\EventService;
-use Carbon\Carbon;
+use Carbon\CarbonImmutable;
 use Livewire\Component;
 
 class Calendar extends Component
@@ -16,7 +16,7 @@ class Calendar extends Component
 
     public function mount()
     {
-        $this->currentDate = Carbon::today();
+        $this->currentDate = CarbonImmutable::today();
         $this->sevenDaysLater = $this->currentDate->addDays(7);
         $this->currentWeek = [];
 
@@ -26,7 +26,7 @@ class Calendar extends Component
         ); //
 
         for ($i = 0; $i < 7; $i++) {
-            $this->day = Carbon::today()->addDays($i)->format('m月d日');
+            $this->day = CarbonImmutable::today()->addDays($i)->format('m月d日');
             array_push($this->currentWeek, $this->day);
         }
         // dd($this->currentWeek);
@@ -36,7 +36,7 @@ class Calendar extends Component
     {
         $this->currentDate = $date; // 文字列
         $this->currentWeek = [];
-        $this->sevenDaysLater = Carbon::parse($this->currentDate)->addDays(7);
+        $this->sevenDaysLater = CarbonImmutable::parse($this->currentDate)->addDays(7);
 
         $this->events = EventService::getWeekEvents(
             $this->currentDate,
@@ -44,7 +44,7 @@ class Calendar extends Component
         ); //
 
         for ($i = 0; $i < 7; $i++) {
-            $this->day = Carbon::parse($this->currentDate)->addDays($i)
+            $this->day = CarbonImmutable::parse($this->currentDate)->addDays($i)
                 ->format('m月d日'); // parseでCarbonインスタンスに変換後 日付を計算
             array_push($this->currentWeek, $this->day);
         }
