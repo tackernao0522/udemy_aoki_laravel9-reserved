@@ -328,3 +328,90 @@ class Calendar extends Component
   }
 }
 ```
+
+## 85 ダミーデータの修正(分と時間を画面に合うように変更)
+
+10 時〜20 時 30 分単位<br>
+
+```
+$availableHour = $this->faker->numberBetween(10, 18); // 10時〜18時
+$minutes = [0, 30]; // 00分か30分
+$mKey = array_rand($minutes); // ランダムにキーを取得
+$addHour = $this->faker->numberBetween(1, 3); // イベント時間 1時間〜3時間
+
+$dummyDate = $this->faker->dateTimeThisMonth; // 今月分をランダムに取得
+$startDate = $dummyDate->setTime($availableHour, $minutes[$mKey]);
+$clone = clone $startDate; // そのままmodifyするとstartDateも変わるためコピー
+$endDate = $clone->modify('+' . $addHour . 'hour');
+
+return [
+  略
+  'start_date' => $startDate,
+  'end_date' => $endDate,
+];
+```
+
+### ハンズオン
+
+- `database/factories/EventFactory.php`を編集<br>
+
+```php:EventFactory.php
+<?php
+
+namespace Database\Factories;
+
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Event>
+ */
+class EventFactory extends Factory
+{
+  /**
+   * Define the model's default state.
+   *
+   * @return array<string, mixed>
+   */
+  public function definition()
+  {
+    // 追加
+    $availableHour = $this->faker->numberBetween(10, 18); // 10時〜18時
+    $minutes = [0, 30]; // 00分か30分
+    $mKey = array_rand($minutes); // ランダムにキーを取得
+    $addHour = $this->faker->numberBetween(1, 3); // イベント時間 1時間〜3時間
+    // ここまで
+
+    $dummyDate = $this->faker->dateTimeThisMonth;
+    // 追加
+    $startDate = $dummyDate->setTime($availableHour, $minutes[$mKey]);
+    $clone = clone $startDate;
+    $endDate = $clone->modify('+' . $addHour . 'hour');
+    dd($startDate, $endDate); // 確認後コメントアウト
+    // ここまで
+
+    return [
+      'name' => $this->faker->name,
+      'information' => $this->faker->realText,
+      'max_people' => $this->faker->numberBetween(1, 20),
+      // 編集
+      'start_date' => $startDate,
+      // 編集
+      'end_date' => $endDate,
+      'is_visible' => $this->faker->boolean,
+    ];
+  }
+}
+```
+
+- `$ php artisan migrate:fresh --seed`を実行<br>
+
+```:terminal
+^ DateTime @1648778400 {#1919
+  date: 2022-04-01 11:00:00.0 Asia/Tokyo (+09:00)
+}
+^ DateTime @1648789200 {#1923
+  date: 2022-04-01 14:00:00.0 Asia/Tokyo (+09:00)
+}
+```
+
+- `コメントアウト後 $ php artisan migrate:fresh --seed`を実行<br>
