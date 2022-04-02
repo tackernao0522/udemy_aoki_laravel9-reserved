@@ -227,3 +227,104 @@ class Calendar extends Component
     @endforeach
 </div>
 ```
+
+## 84 CarbonImmutable(初期表示で 7 日間増えていた問題の対策)
+
+### 初期表示で 7 日間増えていた問題
+
+Carbon はミュータブル(可変)とイミュータブル(不変)がある。デフォルトはミュータブル<br>
+
+```
+$this->currentDate = Carbon::today(); // こっちも変わってしまう
+$this->sevenDaysLater = $this->currentDate->addDays(7);
+```
+
+対策 1 ->copoy()を使ってコピーしてから処理する<br>
+
+```
+$this->currentDate = Carbon::today();
+
+$this->sevenDaysLater = $this->currentDate->copy()->addDays(7);
+```
+
+対策 2 イミュータブル版を使う<br>
+
+```
+use Carbon\CarbonImmutable;
+
+// Carbonの箇所をCarbonImmutable に変更する
+```
+
+### ハンズオン
+
+- `app/Http/Livewire/Calendar.php`を編集<br>
+
+```php:Calendar.php
+<?php
+
+namespace App\Http\Livewire;
+
+use App\Services\EventService;
+// 編集
+use Carbon\CarbonImmutable;
+use Livewire\Component;
+
+class Calendar extends Component
+{
+  public $currentDate;
+  public $day;
+  public $currentWeek;
+  public $sevenDaysLater;
+  public $events;
+
+  public function mount()
+  {
+    // 編集
+    $this->currentDate = CarbonImmutable::today();
+    $this->sevenDaysLater = $this->currentDate->addDays(7);
+    $this->currentWeek = [];
+
+    $this->events = EventService::getWeekEvents(
+      $this->currentDate->format('Y-m-d'),
+      $this->sevenDaysLater->format('Y-m-d')
+    ); //
+
+    for ($i = 0; $i < 7; $i++) {
+      // 編集
+      $this->day = CarbonImmutable::today()
+        ->addDays($i)
+        ->format('m月d日');
+      array_push($this->currentWeek, $this->day);
+    }
+    // dd($this->currentWeek);
+  }
+
+  public function getDate($date)
+  {
+    $this->currentDate = $date; // 文字列
+    $this->currentWeek = [];
+    // 編集
+    $this->sevenDaysLater = CarbonImmutable::parse($this->currentDate)->addDays(
+      7
+    );
+
+    $this->events = EventService::getWeekEvents(
+      $this->currentDate,
+      $this->sevenDaysLater->format('Y-m-d')
+    ); //
+
+    for ($i = 0; $i < 7; $i++) {
+      // 編集
+      $this->day = CarbonImmutable::parse($this->currentDate)
+        ->addDays($i)
+        ->format('m月d日'); // parseでCarbonインスタンスに変換後 日付を計算
+      array_push($this->currentWeek, $this->day);
+    }
+  }
+
+  public function render()
+  {
+    return view('livewire.calendar');
+  }
+}
+```
