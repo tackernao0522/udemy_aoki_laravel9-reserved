@@ -13,7 +13,13 @@
                 <div class="py-1 px-2 border border-gray-200 text-center">{{ $currentWeek[$i]['dayOfWeek'] }}</div>
                 @for ($j = 0; $j < 21; $j++)
                     @if ($events->isNotEmpty())
-                        <div class="py-1 px-2 h-8 border border-gray-200 text-center">{{ \Constant::EVENT_TIME[$j] }}</div>
+                        @if (!is_null($events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])))
+                            <div class="py-1 px-2 h-8 border border-gray-200 text-xs">
+                                {{ $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])->name }}
+                            </div>
+                        @else
+                            <div class="py-1 px-2 h-8 border border-gray-200 text-center"></div>
+                        @endif
                     @else
                         <div class="py-1 px-2 h-8 border border-gray-200 text-center"></div>
                     @endif
