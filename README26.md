@@ -233,6 +233,8 @@ $eventPeriod = \Carbon\Carbon::parse($eventInfo->start_date)->diffInMinutes($eve
 </div>
 ```
 
+### ハンズオン
+
 - `resources/views/livewire/calendar.blade.php`を編集<br>
 
 ```php:calendar.blade.php
