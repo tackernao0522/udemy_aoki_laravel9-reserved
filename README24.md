@@ -275,31 +275,33 @@ class CalendarLayout extends Component
 
 * `$ touch resources/views/components/day.blade.php`を実行<br>
 
-- `resources/views/components/calendar.blade.php`を編集<br>
+- `resources/views/components/calendar-time.blade.php`を編集<br>
 
 ```php:calendar.blade.php
 <div>
     <div class="py-1 px-2 border border-gray-200 text-center">日</div>
     <div class="py-1 px-2 border border-gray-200 text-center">曜日</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">14:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">15:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:00</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:30</div>
-    <div class="py-1 px-2 h-8 border border-gray-200 text-center">20:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">10:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">10:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">11:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">11:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">12:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">12:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">13:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">13:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">14:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">14:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">15:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">15:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">16:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">16:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">17:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">17:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">18:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">18:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">19:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">19:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">20:00</div>
 </div>
 ```
 
@@ -307,27 +309,29 @@ class CalendarLayout extends Component
 
 ```php:day.blade.php
 <div class="w-32">
-  <div class="py-1 px-2 border border-gray-200 text-center">日</div>
-  <div class="py-1 px-2 border border-gray-200 text-center">曜日</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">10:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">11:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">12:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">13:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">14:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">15:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">16:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">17:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">18:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:00</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">19:30</div>
-  <div class="py-1 px-2 h-8 border border-gray-200 text-center">20:00</div>
+    <div class="py-1 px-2 border border-gray-200 text-center">日</div>
+    <div class="py-1 px-2 border border-gray-200 text-center">曜日</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">10:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">10:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">11:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">11:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">12:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">12:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">13:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">13:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">14:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">14:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">15:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">15:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">16:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">16:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">17:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">17:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">18:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">18:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">19:00</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">19:30</div>
+    <div class="py-1 px-2 h-8 border border-gray-200">20:00</div>
 </div>
 ```
 
