@@ -1,3 +1,30 @@
+## 89 2 つの for 文の設定(日付と時間)
+
+- `views/livewire/calendar.blade.php`<br>
+
+```php:calendar.blade.php
+<div class="flex border border-green-400 mx-auto">
+  <x-calendar-time />
+  @for ($i = 0; $i < 7; $i++)
+    <div class="w-32">
+    <div class="略">{{ $currentWeek[$i]['day'] }}</div>
+    <div class="略">{{ $currentWeek[$i]['dayOfWeek'] }}</div>
+    @for($j = 0; $j < 21; $j++)
+      @foreach($events as $event)
+        // イベントの判定
+        <div></div>
+      @endforeach
+    @endfor
+    </div>
+  @endfor
+</div>
+```
+
+### ハンズオン
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
 <div>
     <div class="text-center text-sm">
         日付を選択してください。本日から最大30日先まで選択可能です。
@@ -22,3 +49,4 @@
         {{ $event->start_date }}<br>
     @endforeach
 </div>
+```
