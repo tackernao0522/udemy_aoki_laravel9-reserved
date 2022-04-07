@@ -28,8 +28,8 @@ public function detail($id)
 ### ビュー側
 
 ```php:event-detail.blade.php
-<x-jet-label for="reservedPeople" value="予約人数" />
-<select name="reservedPeople">
+<x-jet-label for="reserved_people" value="予約人数" />
+<select name="reserved_people">
   @for ($i = 1; $i <= $reservablePeople; $i++)
     <option value="{{ $i }}">{{ $i }}</option>
   @endfor
@@ -137,7 +137,7 @@ class ReservationController extends Controller
                             // 追加
                             <div class="mt-4">
                                 <x-jet-label for="reserved_people" value="予約人数" />
-                                <select name="reservedPeople">
+                                <select name="reserved_people">
                                     @for ($i = 1; $i <= $reservablePeople; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
@@ -178,6 +178,53 @@ Route::post('/{id}', [ReservationController::class, 'reserve'])->name('events.re
 - `routes/web.php`を編集<br>
 
 ```php:web.php
+<?php
+
+use App\Http\Controllers\AlpineTestController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\LivewireTestController;
+use App\Http\Controllers\ReservationController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+    return view('calendar');
+});
+
+// Route::middleware(['auth:sanctum', 'verified'])
+//     ->get('/dashboard', function () {
+//         return view('dashboard');
+//     })
+//     ->name('dashboard');
+
+Route::prefix('manager')
+    ->middleware('can:manager-higher')
+    ->group(function () {
+        Route::get('events/past', [EventController::class, 'past'])->name('events.past');
+        Route::resource('events', EventController::class);
+    });
+
+Route::middleware('can:user-higher')->group(function () {
+    Route::get('/dashboard', [ReservationController::class, 'dashboard'])->name('dashboard');
+    Route::get('/{id}', [ReservationController::class, 'detail'])->name('events.detail');
+    // 追加
+    Route::post('/{id}', [ReservationController::class, 'reserve'])->name('events.reserve');
+});
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+    ->prefix('livewire-test')
+    ->name('livewire-test.')
+    ->group(function () {
+        Route::get('index', 'index')->name('index');
+        Route::get('register', 'register')->name('register');
+    });
+
+Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
+```
+
++ `resources/views/event-detail.blade.php`を編集<br>
+
+```php:event-detail.blade.php
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -233,7 +280,7 @@ Route::post('/{id}', [ReservationController::class, 'reserve'])->name('events.re
                             </div>
                             <div class="mt-4">
                                 <x-jet-label for="reserved_people" value="予約人数" />
-                                <select name="reservedPeople">
+                                <select name="reserved_people">
                                     @for ($i = 1; $i <= $reservablePeople; $i++)
                                         <option value="{{ $i }}">{{ $i }}</option>
                                     @endfor
@@ -403,4 +450,34 @@ class ReservationController extends Controller
     }
   }
 }
+```
+
+## 99 イベント予約処理 その 2
+
+- `resources/views/dashboard.blade.php`を編集<br>
+
+```php:dashboard.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            イベントカレンダー
+        </h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="event-calendar mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                // 追加
+                @if (session('status'))
+                    <div class="mb-4 font-medium text-sm text-green-600">
+                        {{ session('status') }}
+                    </div>
+                @endif
+                // ここまで
+                @livewire('calendar')
+            </div>
+        </div>
+    </div>
+    <script src="{{ mix('js/flatpickr.js') }}"></script>
+</x-app-layout>
 ```
