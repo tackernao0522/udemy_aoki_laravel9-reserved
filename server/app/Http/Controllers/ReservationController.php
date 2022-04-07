@@ -47,21 +47,20 @@ class ReservationController extends Controller
             ->first();
 
         if (
-            is_null($reservedPeople)
-            || $event->max_people >= $reservedPeople
-            ->number_of_people + $request->reserved_people
+            is_null($reservedPeople) ||
+            $event->max_people >= $reservedPeople->number_of_people + $request->reserved_people
         ) {
             Reservation::create([
                 'user_id' => Auth::id(),
-                'event_id' => $request->id,
-                'number_of_people' => $request->reserved_people,
+                'event_id' => $request['id'],
+                'number_of_people' => $request['reserved_people'],
             ]);
-            session()->flash('status', '登録OKです。');
+
+            session()->flash('status', '登録okです');
 
             return to_route('dashboard');
         } else {
             session()->flash('status', 'この人数は予約できません。');
-
             return view('dashboard');
         }
     }
