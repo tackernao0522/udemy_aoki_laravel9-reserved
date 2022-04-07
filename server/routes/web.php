@@ -25,6 +25,7 @@ Route::prefix('manager')
 
 Route::middleware('can:user-higher')->group(function () {
     Route::get('/dashboard', [ReservationController::class, 'dashboard'])->name('dashboard');
+    Route::get('/{id}', [ReservationController::class, 'detail'])->name('events.detail');
 });
 
 // localhost/livewire-test/index
