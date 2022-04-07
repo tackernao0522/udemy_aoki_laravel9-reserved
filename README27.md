@@ -393,3 +393,240 @@ public const HOME = '/dashboard';
     </div>
 </nav>
 ```
+
+## 96 イベント詳細表示
+
+ルーティング<br>
+
+```php:web.php
+Route::middleware('can:user-higher')
+  ->group(function() {
+    略
+    Route::get('/{id}', [ReservationController::class, 'detail'])->name('events.detail');
+  });
+```
+
+コントローラ ReservationController<br>
+
+```php:ReservationController.php
+public function detail($id)
+{
+  $event = Event::findOrFail($id);
+
+  return view('event-detail', compact('event'));
+}
+```
+
+### ビュー
+
+`resources/views/event-detail.blade.php`<br>
+
+`manager/events/show.blade.php`をコピーして不要な箇所を削除<br>
+
+`livewire/calendar.blade.php`にリンク追加<br>
+
+```php:calendar.blade.php
+<a href="{{ route('events.detail', ['id' => $events->firstWhere('start_date', $currentWeek[$id]['checkDay'] . " " . \Constant::EVENT_TIME[$j])->id]) }}">
+```
+
+### ハンズオン
+
+- `routes/web.php`を編集<br>
+
+```php:web.php
+<?php
+
+use App\Http\Controllers\AlpineTestController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\LivewireTestController;
+use App\Http\Controllers\ReservationController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+  return view('calendar');
+});
+
+// Route::middleware(['auth:sanctum', 'verified'])
+//     ->get('/dashboard', function () {
+//         return view('dashboard');
+//     })
+//     ->name('dashboard');
+
+Route::prefix('manager')
+  ->middleware('can:manager-higher')
+  ->group(function () {
+    Route::get('events/past', [EventController::class, 'past'])->name(
+      'events.past'
+    );
+    Route::resource('events', EventController::class);
+  });
+
+Route::middleware('can:user-higher')->group(function () {
+  Route::get('/dashboard', [ReservationController::class, 'dashboard'])->name(
+    'dashboard'
+  );
+  // 追加
+  Route::get('/{id}', [ReservationController::class, 'detail'])->name(
+    'events.detail'
+  );
+});
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->name('livewire-test.')
+  ->group(function () {
+    Route::get('index', 'index')->name('index');
+    Route::get('register', 'register')->name('register');
+  });
+
+Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
+```
+
+- `app/Http/Controllers/ReservationController.php`を編集<br>
+
+```php:ReservationController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Event;
+use Illuminate\Http\Request;
+
+class ReservationController extends Controller
+{
+  public function dashboard()
+  {
+    return view('dashboard');
+  }
+
+  // 追加
+  public function detail($id)
+  {
+    $event = Event::findOrFail($id);
+
+    return view('event-detail', compact('event'));
+  }
+}
+```
+
+- `$ touch resources/views/event-detail.blade.php`を実行<br>
+
+* `resources/views/event-detail.blade.php`を編集<br>
+
+```php:event-detail.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            イベント詳細
+        </h2>
+    </x-slot>
+
+    <div class="pt-4 pb-2">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+
+                <div class="max-w-2xl py-4 mx-auto">
+                    <x-jet-validation-errors class="mb-4" />
+
+                    @if (session('status'))
+                        <div class="mb-4 font-medium text-sm text-green-600">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <form method="get" action="{{ route('events.edit', $event->id) }}">
+                        <div>
+                            <x-jet-label for="event_name" value="イベント名" />
+                            {{ $event->name }}
+                        </div>
+                        <div class="mt-4">
+                            <x-jet-label for="information" value="イベント詳細" />
+                            {!! nl2br(e($event->information)) !!}
+                        </div>
+
+                        <div class="md:flex justify-between">
+                            <div class="mt-4">
+                                <x-jet-label for="event_date" value="イベント日付" />
+                                {{ $event->eventDate }}
+                            </div>
+
+                            <div class="mt-4">
+                                <x-jet-label for="start_time" value="開始時間" />
+                                {{ $event->startTime }}
+                            </div>
+
+                            <div class="mt-4">
+                                <x-jet-label for="end_time" value="終了時間" />
+                                {{ $event->endTime }}
+                            </div>
+                        </div>
+                        <div class="md:flex justify-between items-end">
+                            <div class="mt-4">
+                                <x-jet-label for="max_people" value="定員数" />
+                                {{ $event->max_people }}
+                            </div>
+                            <x-jet-button class="ml-4">
+                                予約する
+                            </x-jet-button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    <div class="text-center text-sm">
+        日付を選択してください。本日から最大30日先まで選択可能です。
+    </div>
+    <input id="calendar" class="block mt-1 mb-2 mx-auto" type="text" name="calendar" value="{{ $currentDate }}"
+        wire:change="getDate($event.target.value)" />
+
+    <div class="flex border border-green-400 mx-auto">
+        <x-calendar-time />
+        @for ($i = 0; $i < 7; $i++)
+            <div class="w-32">
+                <div class="py-1 px-2 border border-gray-200 text-center">{{ $currentWeek[$i]['day'] }}</div>
+                <div class="py-1 px-2 border border-gray-200 text-center">{{ $currentWeek[$i]['dayOfWeek'] }}</div>
+                @for ($j = 0; $j < 21; $j++)
+                    @if ($events->isNotEmpty())
+                        @if (!is_null($events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])))
+                            @php
+                                // 追加
+                                $eventId = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])->id;
+                                // ここまで
+                                $eventName = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])->name;
+                                $eventInfo = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j]);
+                                $eventPeriod = \Carbon\Carbon::parse($eventInfo->start_date)->diffInMinutes($eventInfo->end_date) / 30 - 1;
+                            @endphp
+                            // 編集
+                            <a href="{{ route('events.detail', ['id' => $eventId]) }}">
+                                <div class="py-1 px-2 h-8 border border-gray-200 text-xs bg-blue-100">
+                                    {{ $eventName }}
+                                </div>
+                            </a>
+                            // ここまで
+                            @if ($eventPeriod > 0)
+                                @for ($k = 0; $k < $eventPeriod; $k++)
+                                    <div class="py-1 px-2 h-8 border border-gray-200 bg-blue-100"></div>
+                                @endfor
+                                @php $j += $eventPeriod @endphp
+                            @endif
+                        @else
+                            <div class="py-1 px-2 h-8 border border-gray-200 text-center"></div>
+                        @endif
+                    @else
+                        <div class="py-1 px-2 h-8 border border-gray-200 text-center"></div>
+                    @endif
+                @endfor
+            </div>
+        @endfor
+    </div>
+</div>
+```
