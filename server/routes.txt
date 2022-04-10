@@ -45,6 +45,6 @@
   PUT             user/password ...................................................................................................................... user-password.update › Laravel\Fortify › PasswordController@update
   GET|HEAD        user/profile ............................................................................................................................ profile.show › Laravel\Jetstream › UserProfileController@show
   PUT             user/profile-information ...................................................................................... user-profile-information.update › Laravel\Fortify › ProfileInformationController@update
-  GET|HEAD        {id} ..................................................................................................................................................... events.detail › ReservationController@detail
   POST            {id} ................................................................................................................................................... events.reserve › ReservationController@reserve
+  GET|HEAD        {id} ..................................................................................................................................................... events.detail › ReservationController@detail
 
