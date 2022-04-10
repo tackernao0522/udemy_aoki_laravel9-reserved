@@ -367,3 +367,164 @@ class MyPageController extends Controller
   }
 }
 ```
+
+## 106 マイページ キャンセル処理 コントローラ
+
+### マイページ キャンセル
+
+コントローラ<br>
+
+```php:MyPageController.php
+use Carbon\Carbon;
+
+public function cancel($id)
+{
+  $reservation = Reservation::where('user_id', '=', Auth::id())
+    ->where('event_id', '=', $id)
+    ->first();
+
+  $reservation->canceled_date = Carbon::now()->format('Y-m-d H:i:s');
+  $reservation->save();
+
+  session()->flash('status', 'キャンセルしました。');
+
+  return to_route('dashboard');
+}
+```
+
+- `app/Http/Controllers/MyPageController.php`を編集<br>
+
+```php:MyPageController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Event;
+use App\Models\Reservation;
+use App\Models\User;
+use App\Services\MyPageService;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class MyPageController extends Controller
+{
+  public function index()
+  {
+    $user = User::findOrFail(Auth::id());
+    $events = $user->events;
+    $fromTodayEvents = MyPageService::reservedEvent($events, 'fromToday');
+    $pastEvents = MyPageService::reservedEvent($events, 'past');
+    // dd($user, $events, $fromTodayEvents, $pastEvents);
+
+    return view('mypage/index', compact('fromTodayEvents', 'pastEvents'));
+  }
+
+  public function show($id)
+  {
+    $event = Event::findOrFail($id);
+    $reservation = Reservation::where('user_id', '=', Auth::id())
+      ->where('event_id', '=', $id)
+      ->first();
+    // dd($reserveation);
+
+    return view('mypage/show', compact('event', 'reservation'));
+  }
+
+  // 追加
+  public function cancel($id)
+  {
+    $reservation = Reservation::where('user_id', '=', Auth::id())
+      ->where('event_id', '=', $id)
+      ->first();
+
+    $reservation->canceled_date = Carbon::now()->format('Y-m-d H:i:s');
+    $reservation->save();
+
+    session()->flash('status', 'キャンセルしました。');
+
+    return to_route('dashboard');
+  }
+}
+```
+
+- `resources/views/mypage/show.blade.php`を編集<br>
+
+```php:show.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            イベント詳細
+        </h2>
+    </x-slot>
+
+    <div class="pt-4 pb-2">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+
+                <div class="max-w-2xl py-4 mx-auto">
+                    <x-jet-validation-errors class="mb-4" />
+
+                    @if (session('status'))
+                        <div class="mb-4 font-medium text-sm text-green-600">
+                            {{ session('status') }}
+                        </div>
+                    @endif
+
+                    <div>
+                        <x-jet-label for="event_name" value="イベント名" />
+                        {{ $event->name }}
+                    </div>
+                    <div class="mt-4">
+                        <x-jet-label for="information" value="イベント詳細" />
+                        {!! nl2br(e($event->information)) !!}
+                    </div>
+
+                    <div class="md:flex justify-between">
+                        <div class="mt-4">
+                            <x-jet-label for="event_date" value="イベント日付" />
+                            {{ $event->eventDate }}
+                        </div>
+
+                        <div class="mt-4">
+                            <x-jet-label for="start_time" value="開始時間" />
+                            {{ $event->startTime }}
+                        </div>
+
+                        <div class="mt-4">
+                            <x-jet-label for="end_time" value="終了時間" />
+                            {{ $event->endTime }}
+                        </div>
+                    </div>
+                    <form id="cancel_{{ $event->id }}" method="post"
+                        action="{{ route('mypage.cancel', $event->id) }}">
+                        @csrf
+                        <div class="md:flex justify-between items-end">
+                            <div class="mt-4">
+                                <x-jet-label value="予約人数" />
+                                {{ $reservation->number_of_people }}
+                            </div>
+                            // 編集 >= に戻す
+                            @if ($event->eventDate >= \Carbon\Carbon::today()->format('Y年m月d日'))
+                                <a href="#" data-id="{{ $event->id }}" onclick="cancelPost(this)"
+                                    class="ml-4 bg-black text-white py-2 px-4">
+                                    キャンセルする
+                                </a>
+                            @endif
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function cancelPost(e) {
+            'user strinct';
+            if (confirm('本当にキャンセルしてもよろしいですか？')) {
+                document.getElementById('cancel_' + e.dataset.id).submit();
+            }
+        }
+    </script>
+</x-app-layout>
+```
