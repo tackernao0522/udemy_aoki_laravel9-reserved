@@ -32,4 +32,9 @@ class MyPageController extends Controller
 
         return view('mypage/show', compact('event', 'reservation'));
     }
+
+    public function cancel($id)
+    {
+        dd($id);
+    }
 }
