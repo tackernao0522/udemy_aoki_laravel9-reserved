@@ -15,6 +15,8 @@ class MyPageController extends Controller
         $events = $user->events;
         $fromTodayEvents = MyPageService::reservedEvent($events, 'fromToday');
         $pastEvents = MyPageService::reservedEvent($events, 'past');
-        dd($events, $fromTodayEvents, $pastEvents);
+        // dd($user, $events, $fromTodayEvents, $pastEvents);
+
+        return view('mypage/index', compact('fromTodayEvents', 'pastEvents'));
     }
 }

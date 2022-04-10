@@ -265,3 +265,123 @@ class MyPageController extends Controller
   }
 }
 ```
+
+## 102 予約したイベントの取得(今日を含む未来と過去それぞれ)
+
+### Services/MyPageService
+
+```php:MyService.php
+namespace App\Services;
+
+use Carbon\Carbon;
+
+public static function reservedEvent($events, $string)
+{
+    $reservedEvents = [];
+    if($string === 'fromToday') {
+        foreach($events->sortBy('start_date') as $event)  { // 昇順
+            if(is_null($event->pivot->canceled_date) && $event->start_date >= Carbon::now()->format('Y-m-d 00:00:00')) {
+                $eventInfo = [
+                    'name' => $event->name,
+                    'start_date' => $event->start_date,
+                    'end_date' => $event->end_date,
+                    'number_of_people' => $event->pivot->number_of_people,
+                ];
+                array_push($reservedEvents, $eventInfo;);
+            }
+        }
+    }
+    if($string === 'past') {
+        foreach($events->sortByDesc('start_date') as $evnet) { // 降順
+            if(is_null($event->pivot->canceled_date) && $event->start_date < Carbon::now()->format('Y-m-d 00:00:00')) {
+                $eventInfo = [
+                    'name' => $event->name,
+                    'start_date' => $event->start_date,
+                    'end_date' => $event->end_date,
+                    'number_of_people' => $event->pivot->number_of_people,
+                ];
+                array_push($reservedEvents, $eventInfo);
+            }
+        }
+    }
+}
+```
+
+### ハンズオン
+
+- `app/Services/MyPageService.php`を編集<br>
+
+```php:MyPageService.php
+<?php
+
+namespace App\Services;
+
+use Carbon\Carbon;
+
+class MyPageService
+{
+  public static function reservedEvent($events, $string)
+  {
+    $reservedEvents = [];
+    if ($string === 'fromToday') {
+      foreach ($events->sortBy('start_date') as $event) {
+        if (
+          is_null($event->pivot->canceled_date) &&
+          $event->start_date >= Carbon::now()->format('Y-m-d 00:00:00')
+        ) {
+          $eventInfo = [
+            'name' => $event->name,
+            'start_date' => $event_date,
+            'number_of_people' => $event->pivot->numbar_of_people,
+          ];
+          array_push($reservedEvents, $eventInfo);
+        }
+      }
+    } elseif ($string === 'past') {
+      foreach ($events->sortByDesc('start_date') as $event) {
+        if (
+          is_null($event->pivot->canceled_date) &&
+          $event->start_date < Carbon::now()->format('Y-m-d 00:00:00')
+        ) {
+          $eventInfo = [
+            'name' => $event->name,
+            'start_date' => $event->start_date,
+            'end_date' => $event->end_date,
+            'number_of_people' => $event->pivot->number_of_people,
+          ];
+          array_push($reservedEvents, $eventInfo);
+        }
+      }
+    }
+
+    return $reservedEvents;
+  }
+}
+```
+
+- `app/Http/Controllers/MyPageController.php`を編集<br>
+
+```php:MyPageController.php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\User;
+use App\Services\MyPageService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class MyPageController extends Controller
+{
+  public function index()
+  {
+    $user = User::findOrFail(Auth::id());
+    $events = $user->events;
+    $fromTodayEvents = MyPageService::reservedEvent($events, 'fromToday');
+    $pastEvents = MyPageService::reservedEvent($events, 'past');
+    // dd($user, $events, $fromTodayEvents, $pastEvents);
+
+    return view('mypage/index', compact('fromTodayEvents', 'pastEvents'));
+  }
+}
+```
