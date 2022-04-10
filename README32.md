@@ -79,3 +79,177 @@
 
 </html>
 ```
+
+## 111 ログインしていない状態からのリダイレクト
+
+### 未ログイン時はリダイレクト
+
+`middleware('auth')`を使うと未ログイン時は login ページに移動<br>
+
+`routes/web.php`<br>
+
+```php:web.php
+Route::middleware('can:user-higher')
+  ->group(function() {
+    略
+    // Route::get('/{id}', [ReservationController::class, 'detail'])->name('events.detail);
+    Route::post('/{id}', [ReservationController::class, 'reserve'])->name('events.reserve');
+  });
+
+  Route::middleware('auth')
+    ->get('/{id}', [ReservationController::class, 'detail'])->name('events.detail');
+```
+
+### ハンズオン
+
+- `routes/web.php`を編集<br>
+
+```php:web.php
+<?php
+
+use App\Http\Controllers\AlpineTestController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\LivewireTestController;
+use App\Http\Controllers\MyPageController;
+use App\Http\Controllers\ReservationController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+  return view('calendar');
+});
+
+// Route::middleware(['auth:sanctum', 'verified'])
+//     ->get('/dashboard', function () {
+//         return view('dashboard');
+//     })
+//     ->name('dashboard');
+
+Route::prefix('manager')
+  ->middleware('can:manager-higher')
+  ->group(function () {
+    Route::get('events/past', [EventController::class, 'past'])->name(
+      'events.past'
+    );
+    Route::resource('events', EventController::class);
+  });
+
+Route::middleware('can:user-higher')->group(function () {
+  Route::get('/dashboard', [ReservationController::class, 'dashboard'])->name(
+    'dashboard'
+  );
+  Route::get('mypage', [MyPageController::class, 'index'])->name(
+    'mypage.index'
+  );
+  Route::post('mypage/{id}', [MyPageController::class, 'cancel'])->name(
+    'mypage.cancel'
+  );
+  Route::get('mypage/{id}', [MyPageController::class, 'show'])->name(
+    'mypage.show'
+  );
+  // 削除
+  // Route::get('/{id}', [ReservationController::class, 'detail'])->name('events.detail');
+  Route::post('/{id}', [ReservationController::class, 'reserve'])->name(
+    'events.reserve'
+  );
+});
+
+// 追加
+Route::middleware('auth')
+  ->get('/{id}', [ReservationController::class, 'detail'])
+  ->name('events.detail');
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->name('livewire-test.')
+  ->group(function () {
+    Route::get('index', 'index')->name('index');
+    Route::get('register', 'register')->name('register');
+  });
+
+Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
+```
+
+### 補足: 認証・リダイレクト関連
+
+`app/Http/Middleware`<br>
+
+`Authenticate.php` リダイレクト先<br>
+
+`RedirectIfAuthenticated.php` 認証されていた時のリダイレクト先<br>
+
+`app/Providers/RouteServiceProvider.php`<br>
+ホーム(dashboard)などを設定<br>
+
+### ハンズオン
+
+- `resources/views/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<x-calendar-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            イベントカレンダー
+        </h2>
+    </x-slot>
+
+    <div class="py-4">
+        <div class="event-calendar mx-auto sm:px-6 lg:px-8">
+            // borderを削除
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                @livewire('calendar')
+            </div>
+        </div>
+    </div>
+</x-calendar-layout>
+```
+
+- `resources/views/livewire/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
+<div>
+    <div class="text-center text-sm">
+        日付を選択してください。本日から最大30日先まで選択可能です。
+    </div>
+    <input id="calendar" class="block mt-1 mb-2 mx-auto" type="text" name="calendar" value="{{ $currentDate }}"
+        wire:change="getDate($event.target.value)" />
+
+    // border greenを削除
+    <div class="flex mx-auto">
+        <x-calendar-time />
+        @for ($i = 0; $i < 7; $i++)
+            <div class="w-32">
+                <div class="py-1 px-2 border border-gray-200 text-center">{{ $currentWeek[$i]['day'] }}</div>
+                <div class="py-1 px-2 border border-gray-200 text-center">{{ $currentWeek[$i]['dayOfWeek'] }}</div>
+                @for ($j = 0; $j < 21; $j++)
+                    @if ($events->isNotEmpty())
+                        @if (!is_null($events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])))
+                            @php
+                                $eventId = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])->id;
+                                $eventName = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j])->name;
+                                $eventInfo = $events->firstWhere('start_date', $currentWeek[$i]['checkDay'] . ' ' . \Constant::EVENT_TIME[$j]);
+                                $eventPeriod = \Carbon\Carbon::parse($eventInfo->start_date)->diffInMinutes($eventInfo->end_date) / 30 - 1;
+                            @endphp
+                            <a href="{{ route('events.detail', ['id' => $eventId]) }}">
+                                <div class="py-1 px-2 h-8 border border-gray-200 text-xs bg-blue-100">
+                                    {{ $eventName }}
+                                </div>
+                            </a>
+                            @if ($eventPeriod > 0)
+                                @for ($k = 0; $k < $eventPeriod; $k++)
+                                    <div class="py-1 px-2 h-8 border border-gray-200 bg-blue-100"></div>
+                                @endfor
+                                @php $j += $eventPeriod @endphp
+                            @endif
+                        @else
+                            <div class="py-1 px-2 h-8 border border-gray-200 text-center"></div>
+                        @endif
+                    @else
+                        <div class="py-1 px-2 h-8 border border-gray-200 text-center"></div>
+                    @endif
+                @endfor
+            </div>
+        @endfor
+    </div>
+</div>
+```
