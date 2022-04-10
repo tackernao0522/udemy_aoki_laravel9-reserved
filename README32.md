@@ -1,3 +1,20 @@
+## 110 メニュー追加
+
+### ログインしていないときの対応
+
+### メニューにログインなど追加
+
+`resources/views/welcome.blade.php`の
+
+`@if(Route::has('login')) 〜 @endif`を `layouts/calendar.blade.php`にコピー<br>
+
+ログイン時は`dashboard`と表示される<br>
+
+### ハンズオン
+
+- `resources/views/layouts/calendar.blade.php`を編集<br>
+
+```php:calendar.blade.php
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
@@ -23,6 +40,7 @@
 <body class="font-sans antialiased">
 
     <div class="min-h-screen bg-gray-100">
+        // 追加
         @if (Route::has('login'))
             <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
                 @auth
@@ -38,6 +56,7 @@
                 @endauth
             </div>
         @endif
+        // ここまで
 
         <!-- Page Heading -->
         @if (isset($header))
@@ -59,3 +78,4 @@
 </body>
 
 </html>
+```
