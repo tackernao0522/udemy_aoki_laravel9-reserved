@@ -282,6 +282,7 @@ public static function reservedEvent($events, $string)
         foreach($events->sortBy('start_date') as $event)  { // 昇順
             if(is_null($event->pivot->canceled_date) && $event->start_date >= Carbon::now()->format('Y-m-d 00:00:00')) {
                 $eventInfo = [
+                    'id' => $event->id,
                     'name' => $event->name,
                     'start_date' => $event->start_date,
                     'end_date' => $event->end_date,
@@ -295,6 +296,7 @@ public static function reservedEvent($events, $string)
         foreach($events->sortByDesc('start_date') as $evnet) { // 降順
             if(is_null($event->pivot->canceled_date) && $event->start_date < Carbon::now()->format('Y-m-d 00:00:00')) {
                 $eventInfo = [
+                    'id' => $event->id,
                     'name' => $event->name,
                     'start_date' => $event->start_date,
                     'end_date' => $event->end_date,
@@ -320,16 +322,25 @@ use Carbon\Carbon;
 
 class MyPageService
 {
+<?php
+
+namespace App\Services;
+
+use Carbon\Carbon;
+
+class MyPageService
+{
   public static function reservedEvent($events, $string)
   {
     $reservedEvents = [];
     if ($string === 'fromToday') {
       foreach ($events->sortBy('start_date') as $event) {
         if (
-          is_null($event->pivot->canceled_date) &&
-          $event->start_date >= Carbon::now()->format('Y-m-d 00:00:00')
+          is_null($event->pivot->canceled_date) && $event->start_date >= Carbon::now()
+          ->format('Y-m-d 00:00:00')
         ) {
           $eventInfo = [
+            'id' => $event->id,
             'name' => $event->name,
             'start_date' => $event_date,
             'number_of_people' => $event->pivot->numbar_of_people,
@@ -340,10 +351,11 @@ class MyPageService
     } elseif ($string === 'past') {
       foreach ($events->sortByDesc('start_date') as $event) {
         if (
-          is_null($event->pivot->canceled_date) &&
-          $event->start_date < Carbon::now()->format('Y-m-d 00:00:00')
+          is_null($event->pivot->canceled_date) && $event->start_date < Carbon::now()
+          ->format('Y-m-d 00:00:00')
         ) {
           $eventInfo = [
+            'id' => $event->id,
             'name' => $event->name,
             'start_date' => $event->start_date,
             'end_date' => $event->end_date,
@@ -384,4 +396,196 @@ class MyPageController extends Controller
     return view('mypage/index', compact('fromTodayEvents', 'pastEvents'));
   }
 }
+```
+
+## 103 マイページ index
+
+### maypage/index.blade.php
+
+manager/events/index.blade.php をコピー<br>
+
+以前はコレクション型だったので \$event->id をいう書き方<br>
+
+今回は連想配列型なので \$event['id']という書き方になる<br>
+
+### ハンズオン
+
+- `$ mkdir resources/views/mypage && cp resources/views/manager/events/index.blade.php resources/views/mypage/index.blade.php`を実行<br>
+
+* `resources/views/mypage/index.blade.php`を編集<br>
+
+```php:index.blade.php
+<x-app-layout>
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            予約済みのイベント一覧
+        </h2>
+    </x-slot>
+
+    <div class="py-4">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <section class="text-gray-600 body-font">
+                    <div class="container px-5 py-4 mx-auto">
+                        @if (session('status'))
+                            <div class="mb-4 font-medium text-sm text-green-600">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        <div class="w-full mx-auto overflow-auto">
+                            <table class="table-auto w-full text-left whitespace-no-wrap">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            イベント名</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            開始日時</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            終了日時</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            予約人数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($fromTodayEvents as $event)
+                                        <tr>
+                                            <td class="text-blue-500 px-4 py-3">
+                                                <a href="{{ route('mypage.show', $event['id']) }}">
+                                                    {{ $event['name'] }}
+                                                </a>
+                                            </td>
+                                            <td class="px-4 py-3">{{ $event['start_date'] }}</td>
+                                            <td class="px-4 py-3">{{ $event['end_date'] }}</td>
+                                            <td class="px-4 py-3">
+                                                {{ $event['number_of_people'] }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+    <div class="py-4">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
+                <h2 class="text-center py-2">過去のイベント一覧</h2>
+                <section class="text-gray-600 body-font">
+                    <div class="container px-5 py-4 mx-auto">
+                        @if (session('status'))
+                            <div class="mb-4 font-medium text-sm text-green-600">
+                                {{ session('status') }}
+                            </div>
+                        @endif
+                        <div class="w-full mx-auto overflow-auto">
+                            <table class="table-auto w-full text-left whitespace-no-wrap">
+                                <thead>
+                                    <tr>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            イベント名</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            開始日時</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            終了日時</th>
+                                        <th
+                                            class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">
+                                            予約人数</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($pastEvents as $event)
+                                        <tr>
+                                            <td class="text-blue-500 px-4 py-3">
+                                                <a href="{{ route('mypage.show', $event['id']) }}">
+                                                    {{ $event['name'] }}
+                                                </a>
+                                            </td>
+                                            <td class="px-4 py-3">{{ $event['start_date'] }}</td>
+                                            <td class="px-4 py-3">{{ $event['end_date'] }}</td>
+                                            <td class="px-4 py-3">
+                                                {{ $event['number_of_people'] }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</x-app-layout>
+```
+
+- `routes/web.php`を編集<br>
+
+```php:web.php
+<?php
+
+use App\Http\Controllers\AlpineTestController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\LivewireTestController;
+use App\Http\Controllers\MyPageController;
+use App\Http\Controllers\ReservationController;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/', function () {
+  return view('calendar');
+});
+
+// Route::middleware(['auth:sanctum', 'verified'])
+//     ->get('/dashboard', function () {
+//         return view('dashboard');
+//     })
+//     ->name('dashboard');
+
+Route::prefix('manager')
+  ->middleware('can:manager-higher')
+  ->group(function () {
+    Route::get('events/past', [EventController::class, 'past'])->name(
+      'events.past'
+    );
+    Route::resource('events', EventController::class);
+  });
+
+Route::middleware('can:user-higher')->group(function () {
+  Route::get('/dashboard', [ReservationController::class, 'dashboard'])->name(
+    'dashboard'
+  );
+  Route::get('mypage', [MyPageController::class, 'index'])->name(
+    'mypage.index'
+  );
+  // 追加
+  Route::get('mypage/{id}', [MyPageController::class, 'show'])->name(
+    'mypage.show'
+  );
+  Route::get('/{id}', [ReservationController::class, 'detail'])->name(
+    'events.detail'
+  );
+  Route::post('/{id}', [ReservationController::class, 'reserve'])->name(
+    'events.reserve'
+  );
+});
+
+// localhost/livewire-test/index
+Route::controller(LivewireTestController::class)
+  ->prefix('livewire-test')
+  ->name('livewire-test.')
+  ->group(function () {
+    Route::get('index', 'index')->name('index');
+    Route::get('register', 'register')->name('register');
+  });
+
+Route::get('alpine-test/index', [AlpineTestController::class, 'index']);
 ```
